@@ -5,7 +5,7 @@ const PORT = process.env.SERVER_PORT
 
 function writeInstruction() {
   console.log('##### Place this code in "Tab Reloader" #####\n\n');
-  console.log(`async function letsGo() { \n\n  let response = await fetch('https://itoolabs.zendesk.com/api/v2/views/51026807/execute.json?per_page=50&page=1&include=via_id&exclude=sla_next_breach_at%2Clast_comment');\n\n  if (response.ok) { // если HTTP-статус в диапазоне 200-299\n    let json = await response.json();\n    let data = { "text": json.rows }\n    fetch("http://localhost:${PORT}/api/tickets", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n      },\n      body: JSON.stringify(data),\n    })\n  } else {\n    alert("Ошибка HTTP: " + response.status);\n  }\n}\n\nletsGo()`);
+  console.log(`async function letsGo() { \n\n  let response = await fetch('${process.env.ZENDESK_URL}');\n\n  if (response.ok) { // если HTTP-статус в диапазоне 200-299\n    let json = await response.json();\n    let data = { "text": json.rows }\n    fetch("http://localhost:${PORT}/api/tickets", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n      },\n      body: JSON.stringify(data),\n    })\n  } else {\n    alert("Ошибка HTTP: " + response.status);\n  }\n}\n\nletsGo()`);
   console.log('\n\n##### ##### ##### ##### ##### #### ##### #####\n\n');
 }
 
@@ -36,7 +36,7 @@ export default {
 /*
 async function letsGo() { 
 
-  let response = await fetch('https://itoolabs.zendesk.com/api/v2/views/51026807/execute.json?per_page=50&page=1&include=via_id&exclude=sla_next_breach_at%2Clast_comment');
+  let response = await fetch('${process.env.ZENDESK_URL}');
   
   if (response.ok) { // если HTTP-статус в диапазоне 200-299
     // получаем тело ответа и отправляем его на локальный сервер

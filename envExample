@@ -17,3 +17,5 @@ VATS_TELNUM=79201234567
 VATS_FAKE_TELNUM=79200001234
 # Время до звонка - 600000 = 10 минут; 60000 = 1 минута
 ALERT_TIME=600000
+# Ссылка на вид, который будет мониториться
+ZENDESK_URL=https://client.zendesk.com/api/v2/views/filter_id/execute.json?per_page=50&page=1&params

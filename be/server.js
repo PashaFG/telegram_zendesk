@@ -48,12 +48,13 @@ app.post("/api/tickets", (req, res) => {
   }
 
   // Проверка необходимости оповещения с помощью звонка по телефону
-  for (let i = 0; i < tickets.unAckTickets.length; i++) {
-    console.log(tickets.unAckTickets[i].alertTime);
+  let unAckTickets = tickets.getUnAckedTicket()
+  for (let i = 0; i < unAckTickets.length; i++) {
+    console.log(unAckTickets[i].alertTime);
     console.log(Date.now());
-    if (tickets.unAckTickets[i].alertTime < Date.now()) {
+    if (unAckTickets[i].alertTime < Date.now()) {
       // Совершение вызова и откладывание вызова по данному тикету, еще на N минут, указанных в конфиге
-      tickets.unAckTickets[i].alertTime += Number(process.env.ALERT_TIME)
+      unAckTickets[i].alertTime += Number(process.env.ALERT_TIME)
       callUsers()
       break
     }

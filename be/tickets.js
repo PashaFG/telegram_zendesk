@@ -72,10 +72,14 @@ function ackTicket(ticket_id) {
   console.log(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${unAckTickets.length}`);
 }
 
+function getUnAckedTicket() {
+  return unAckTickets
+}
+
 export default {
   matchTickets,
   saveTickets,
   checkDiffTickets,
   ackTicket,
-  unAckTickets
+  getUnAckedTicket
 }

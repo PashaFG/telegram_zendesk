@@ -6,6 +6,9 @@ const PORT = process.env.SERVER_PORT
 function writeInstruction() {
   console.log('##### Place this code in "Tab Reloader" #####\n\n');
   console.log(`async function letsGo() { \n\n  let response = await fetch('${process.env.ZENDESK_URL}');\n\n  if (response.ok) { // если HTTP-статус в диапазоне 200-299\n    let json = await response.json();\n    let data = { "text": json.rows }\n    fetch("http://localhost:${PORT}/api/tickets", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n      },\n      body: JSON.stringify(data),\n    })\n  } else {\n    alert("Ошибка HTTP: " + response.status);\n  }\n}\n\nletsGo()`);
+  console.log('\n\n##### ##### ##### ##### ##### #### ##### #####');
+  console.log('##### Place this code in console on slack Web version #####\n\n');
+  console.log(`let socket = new WebSocket('${process.env.SLACK_WS}')\n\nsocket.onmessage = function(event) {\n	let response = JSON.parse(event.data)	\n	if (response.type === "desktop_notification"){\n  	fetch("http://localhost:3002/api/slack", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n      },\n      body: JSON.stringify(response),\n    })\n	}\n}; `);
   console.log('\n\n##### ##### ##### ##### ##### #### ##### #####\n\n');
 }
 
@@ -21,6 +24,9 @@ export default {
     значение в < 15 секунд вызывает 429 ошибку (rate-limiter)
     комфортным значением для работы будет не менее 1 минуты
   Запустить расширение.
+
+  Открыть Slack в веб версии, далее зайти в консоль разработчика (F12 > console), вставить необходимый скрипт
+
   Выполнить настройку файла .env (инструкция в файле envExample)
   Запустить сервер с ботом
 
@@ -28,16 +34,17 @@ export default {
     /start - включает оповещения и настраивает сотрудника в домене
     /stop - отключает оповещения и убирает настройку сотрудника в домене
     /ack 123456 - "Подтверждает" тикет и отменяет звонки по нему
+    /slack - "Подтверждает" ВСЕ оповещения полученные из слака
 */
 
 // Скрипт для вставки:
 
 // PORT (30002) изменить в скрипте на SERVER_PORT из файла конфигурации
 /*
-async function letsGo() { 
+async function letsGo() {
 
   let response = await fetch('${process.env.ZENDESK_URL}');
-  
+
   if (response.ok) { // если HTTP-статус в диапазоне 200-299
     // получаем тело ответа и отправляем его на локальный сервер
     let json = await response.json();
@@ -55,4 +62,24 @@ async function letsGo() {
 }
 
 letsGo()
+*/
+
+// Скрипт для получения уведомлений из слака
+
+/*
+let socket = new WebSocket('WS_LINK')
+
+socket.onmessage = function(event) {
+  let response = JSON.parse(event.data)	
+  if (response.type === "desktop_notification"){
+    fetch("http://localhost:3002/api/slack", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(response),
+    })
+  }
+}; 
+
 */

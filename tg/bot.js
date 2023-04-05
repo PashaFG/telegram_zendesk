@@ -1,6 +1,7 @@
 import { Telegraf } from 'telegraf';
 import { setupUser, clearUser } from '../call/apiVatsITL.js'
 import tickets from '../be/tickets.js';
+import slack from '../be/slack.js'
 import dotenv from 'dotenv';
 dotenv.config()
 
@@ -46,6 +47,13 @@ bot.command('ack', (ctx) => {
   tickets.ackTicket(ticket_id)
 });
 
+bot.command('slack', (ctx) => {
+  // "Подтверждение" оповещения об уведомлении в слаке.
+  slack.ackSlackNotification()
+  console.log('Stop alerting on slack push notification')
+  sendMessage('Все предыдущие оповещения были помечены, звонки по ним отключены')
+});
+
 bot.launch();
 
 console.log('Bot is starting');
@@ -53,8 +61,16 @@ console.log('Bot is starting');
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
+function getAlertingStatus() {
+  return alertingOn
+}
+
+function getInputMessage() {
+  return inputMessage
+}
+
 export {
-  inputMessage,
-  alertingOn,
+  getInputMessage,
+  getAlertingStatus,
   sendMessage
 }

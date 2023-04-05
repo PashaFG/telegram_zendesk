@@ -17,5 +17,14 @@ VATS_TELNUM=79201234567
 VATS_FAKE_TELNUM=79200001234
 # Время до звонка - 600000 = 10 минут; 60000 = 1 минута
 ALERT_TIME=600000
-# Ссылка на вид, который будет мониториться
+# Ссылка на вид, который будет мониториться и отдельно необходимо указать домен из зендеска
 ZENDESK_URL=https://client.zendesk.com/api/v2/views/filter_id/execute.json?per_page=50&page=1&params
+ZENDESK_DOMAIN=client.zendesk.com
+
+# Настройка критично важных каналов/людей/ключевого слова (поддерживается только одно)
+# QWERTY123 - emergency
+# ASDFGH123 - hyper emergency
+# ZXCVBN123 - channel with mom
+EMERGENCY_CHANNEL=QWERTY123,ASDFGH123,ZXCVBN123
+EMERGENCY_PEOPLE=my_boss,boss_of_my_boss,mom
+EMERGENCY_CONTENT=@asap

@@ -16,7 +16,7 @@ function matchTickets(rawArray) {
       dateCreated: row.created,
       dateUpdate: row.updated,
       status: row.ticket?.status,
-      link: `https://itoolabs.zendesk.com/agent/tickets/${row.ticket_id}`,
+      link: `https://${process.env.ZENDESK_DOMAIN}/agent/tickets/${row.ticket_id}`,
       priority: row.ticket?.priority,
       sla: row.sla_next_breach_at
     })
@@ -44,9 +44,10 @@ function checkDiffTickets() {
       // Проверка происходит только по двум принципам, тикета не было в старых данных, в тикете изменилась дата последнего изменения
       hasUpdate = true
       updatedTickets.push(element)
+      let alertTime = (element.priority === "high") ? Date.now() + Number(process.env.ALERT_TIME_EMERGENCY) : Date.now() + Number(process.env.ALERT_TIME)
       unAckTickets.push({
         ticket: element,
-        alertTime: Date.now() + Number(process.env.ALERT_TIME)
+        alertTime: alertTime
       })
     }
   })

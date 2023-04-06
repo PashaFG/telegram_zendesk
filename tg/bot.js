@@ -1,5 +1,5 @@
 import { Telegraf } from 'telegraf';
-import { setupUser, clearUser } from '../call/apiVatsITL.js'
+import { setupUser, clearUser } from '../call/apiVats.js'
 import tickets from '../be/tickets.js';
 import slack from '../be/slack.js'
 import dotenv from 'dotenv';

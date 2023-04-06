@@ -1,7 +1,7 @@
 import tickets from "./tickets.js";
 import slack from "./slack.js";
 import { getAlertingStatus, sendMessage } from "../tg/bot.js"
-import { callUsers } from "../call/apiVatsITL.js"
+import { callUsers } from "../call/apiVats.js"
 import browserScript from "../browserScript.js"
 
 import express from "express";

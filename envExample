@@ -17,9 +17,14 @@ VATS_TELNUM=79201234567
 VATS_FAKE_TELNUM=79200001234
 # Время до звонка - 600000 = 10 минут; 60000 = 1 минута
 ALERT_TIME=600000
+ALERT_TIME_EMERGENCY=300000
 # Ссылка на вид, который будет мониториться и отдельно необходимо указать домен из зендеска
 ZENDESK_URL=https://client.zendesk.com/api/v2/views/filter_id/execute.json?per_page=50&page=1&params
 ZENDESK_DOMAIN=client.zendesk.com
+
+SLACK_WS=websocket-link
+# Пример того как может выглядеть линк для WS:
+# wss://wss-primary.slack.com/?token=*******&sync_desync=1&slack_client=desktop&start_args=?agent=client&org_wide_aware=true&agent_version=******&eac_cache_ts=true&cache_ts=0&name_tagging=true&only_self_subteams=true&connect_only=true&ms_latest=true&no_query_on_subscribe=1&flannel=3&lazy_channels=1&gateway_server=******&batch_presence_aware=1
 
 # Настройка критично важных каналов/людей/ключевого слова (поддерживается только одно)
 # QWERTY123 - emergency

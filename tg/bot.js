@@ -43,8 +43,8 @@ bot.command('start', (ctx) => {
 bot.command('ack', (ctx) => {
   // "Подтверждение" оповещения о тикете.
   let ticket_id = Number(ctx.update.message.text.replace('/ack ', ''))
-  console.log(ticket_id);
   tickets.ackTicket(ticket_id)
+  ctx.reply(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket.length}`)
 });
 
 bot.command('slack', (ctx) => {
@@ -53,6 +53,19 @@ bot.command('slack', (ctx) => {
   console.log('Stop alerting on slack push notification')
   sendMessage('Все предыдущие оповещения были помечены, звонки по ним отключены')
 });
+
+bot.action('ack', (ctx) => {
+  // @ts-ignore
+  let ticket_id = Number(ctx.update.callback_query.message.text.match(/^#(\d+)/gm)[0].replace('#', ''))
+  tickets.ackTicket(ticket_id)
+  ctx.reply(`Ack the ticket: #${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket.length}`)
+})
+
+bot.action('ackSlack', (ctx) => {
+  slack.ackSlackNotification()
+  console.log('Stop alerting on slack push notification')
+  sendMessage('Все предыдущие оповещения были помечены, звонки по ним отключены')
+})
 
 bot.launch();
 

@@ -48,14 +48,17 @@ app.post("/api/tickets", (req, res) => {
     if (message?.tickets) {
       message.tickets.forEach((ticket) => {
         // Формирование текста оповещения
-        let text = `${ticket.id} ${ticket.subject}`
+        let text = `#${ticket.id} ${ticket.subject}`
         if (ticket.priority) { text += `\nПриоритет: ${ticket.priority}` }
         if (ticket.sla) { text += `\nSLA: ${ticket.sla}` }
 
         // Формирование кнопки для перехода к тикету
         let body = {
           reply_markup: {
-            inline_keyboard: [[{ text: `Перейти к тикету: #${ticket.id}`, url: ticket.link },]]
+            inline_keyboard: [[
+              { text: `Перейти к тикету: #${ticket.id}`, url: ticket.link },
+              { text: `ack: #${ticket.id}`, callback_data: 'ack' },
+            ]]
           }
         }
 
@@ -85,8 +88,14 @@ app.post("/api/slack", (req, res) => {
     let rawMessage = req.body
     // Проверка на "Важность" данной нотификации
     let notification = slack.checkMessage(rawMessage)
-
-    sendMessage(notification.message)
+    let body = {
+      reply_markup: {
+        inline_keyboard: [[
+          { text: `ack slack notification`, callback_data: 'ackSlack' },
+        ]]
+      }
+    }
+    sendMessage(notification.message, body)
 
     if (notification.type === "emergency") {
       slack.setSlackNotification(Date.now() + Number(process.env.ALERT_TIME_EMERGENCY))

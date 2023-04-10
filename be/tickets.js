@@ -70,7 +70,8 @@ function checkDiffTickets() {
 function ackTicket(ticket_id) {
   // После получения сообщения в боте /ack НОМЕР ТИКЕТА, он будет исключен из массива с тикетами для обзвона
   unAckTickets = unAckTickets.filter(ticket => ticket.ticket.id !== ticket_id)
-  console.log(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${unAckTickets.length}`);
+  let text = `Ack the ticket: ${ticket_id}\nCount unacked tickets: ${unAckTickets.length}`
+  console.log(text);
 }
 
 function getUnAckedTicket() {

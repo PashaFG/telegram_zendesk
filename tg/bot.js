@@ -44,7 +44,7 @@ bot.command('ack', (ctx) => {
   // "Подтверждение" оповещения о тикете.
   let ticket_id = Number(ctx.update.message.text.replace('/ack ', ''))
   tickets.ackTicket(ticket_id)
-  ctx.reply(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket.length}`)
+  ctx.reply(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket().length}`)
 });
 
 bot.command('slack', (ctx) => {
@@ -58,7 +58,7 @@ bot.action('ack', (ctx) => {
   // @ts-ignore
   let ticket_id = Number(ctx.update.callback_query.message.text.match(/^#(\d+)/gm)[0].replace('#', ''))
   tickets.ackTicket(ticket_id)
-  ctx.reply(`Ack the ticket: #${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket.length}`)
+  ctx.reply(`Ack the ticket: #${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket().length}`)
 })
 
 bot.action('ackSlack', (ctx) => {

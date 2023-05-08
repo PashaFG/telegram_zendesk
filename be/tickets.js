@@ -78,7 +78,6 @@ function ackTicket(ticket_id) {
 function getUnAckedTicket() {
   return unAckTickets
 }
-
 async function fetchTicket() {
   let response = await fetch(`https://${process.env.ZENDESK_DOMAIN}/api/v2/views/${process.env.ZENDESK_VIEWS_ID}/execute.json?exclude=sla_next_breach_at`, {
     headers: {

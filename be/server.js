@@ -49,7 +49,7 @@ app.post("/api/tickets", (req, res) => {
         // Формирование текста оповещения
         let text = `#${ticket.id} ${ticket.subject}`
         if (ticket.priority) { text += `\nПриоритет: ${ticket.priority}` }
-        if (ticket.sla) { text += `\nSLA: ${ticket.sla}` }
+        if (ticket.sla) { text += `\nSLA: ${Math.floor((Date.parse(ticket.sla) - Date.now()) / 60000)} min` }
 
         // Формирование кнопки для перехода к тикету
         let body = {

@@ -1,5 +1,7 @@
-# v3.0.1
+# v3.0.2
+- fix non-configurable fetch time
 
+# v3.0.1
 - add command /getUnackedTickets
 
 # v3.0.0

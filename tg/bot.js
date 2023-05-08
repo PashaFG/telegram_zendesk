@@ -63,10 +63,10 @@ bot.command('start', (ctx) => {
   let intervalId = tickets.getTicketIntervalId()
   if (intervalId) {
     // let intervalId = 
-    tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, 60000))
+    tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, Number(process.env.FETCH_TIME)))
     console.log(`[BOT][start] Fetch ticket have intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`)
   } else {
-    tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, 60000))
+    tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, Number(process.env.FETCH_TIME)))
     console.log(`[BOT][start] Fetch ticket have not intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`)
   }
 

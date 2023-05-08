@@ -5,6 +5,7 @@ dotenv.config()
 let oldTickets = []
 let newTickets = []
 let unAckTickets = []
+let ticketIntervalId
 
 function matchTickets(rawArray) {
   // Преобразование полученный информации в минимально-удобночитабельный вид
@@ -78,10 +79,45 @@ function getUnAckedTicket() {
   return unAckTickets
 }
 
+async function fetchTicket() {
+  let response = await fetch(`https://${process.env.ZENDESK_DOMAIN}/api/v2/views/${process.env.ZENDESK_VIEWS_ID}/execute.json?exclude=sla_next_breach_at`, {
+    headers: {
+      Cookie: `_zendesk_shared_session=${process.env.ZENDESK_SHARED_SESSION}`
+    }
+  })
+  if (response.ok) {
+    let json = await response.json();
+    let data = { "text": json.rows }
+    fetch(`http://localhost:${process.env.SERVER_PORT}/api/tickets`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+  } else {
+    return response.status
+  }
+}
+
+function setTicketIntervalId(intervalID) {
+  ticketIntervalId = intervalID
+}
+function getTicketIntervalId() {
+  return ticketIntervalId
+}
+function clearTicketIntervalID() {
+  ticketIntervalId = null
+}
+
 export default {
   matchTickets,
   saveTickets,
   checkDiffTickets,
   ackTicket,
-  getUnAckedTicket
+  getUnAckedTicket,
+  fetchTicket,
+  setTicketIntervalId,
+  getTicketIntervalId,
+  clearTicketIntervalID
 }

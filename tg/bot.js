@@ -31,7 +31,7 @@ bot.help((ctx) => {
     "/stop - Удаляет настройку сотрудника в ВАТС, отключает получение обращений и оповещения о событиях",
     "/ack 000000 - Подтверждает обращение номер 000000 и отменяет последующий звонок по нему",
     "/slack - Подтверждает ВСЕ полученные сообщения от SLACK и отключает оповещения по ним",
-    // "/getUnackedTickets - возвращает список тикетов, находящихся без подтверждения",
+    "/getUnackedTickets - возвращает список тикетов, находящихся без подтверждения",
   ]
   sendMessage(comьands.join('\n'))
 })
@@ -85,6 +85,20 @@ bot.command('slack', (ctx) => {
   console.log('Stop alerting on slack push notification')
   sendMessage('Все предыдущие оповещения были помечены, звонки по ним отключены')
 });
+
+bot.command('getUnackedTickets', (ctx) => {
+  inputMessage = ctx
+  const unacked = tickets.getUnAckedTicket()
+  if (unacked.length > 0) {
+    let string = ''
+    unacked.forEach((ticket) => {
+      string += `#${ticket.ticket.id} - ${(ticket.ticket.sla) ? String(Math.floor((Date.parse(ticket.ticket.sla) - Date.now()) / 60000)) + "min" : "not SLA"}; Time to alert call: ${Math.floor((Date.now() - ticket.alertTime) / 60000)} min\n`
+    })
+    sendMessage(string)
+  } else {
+    sendMessage("Тикеты, требующие внимания отсуствуют")
+  }
+})
 
 bot.action('ack', (ctx) => {
   // @ts-ignore

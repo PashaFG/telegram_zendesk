@@ -6,6 +6,9 @@ SERVER_PORT=3002 #server port listening
 ALERT_TIME=600000 #Reaction time to common events
 ALERT_TIME_EMERGENCY=300000 #Reaction time to emergency events
 FETCH_TIME=60000 #dealay in receiving applications
+LOGGER_SIZE_LIMIT_FILE=10 #in MB
+LOGGER_SIZE_LIMIT_DIRECTORY=256 #in MB
+LOGGER_PATH_TO_DIRECTORY=logs/ # relative path
 
 ## VATS SETTINGS ##
 VATS_DOMAIN=example.domain.com

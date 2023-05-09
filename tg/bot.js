@@ -1,5 +1,6 @@
 import { Telegraf } from 'telegraf';
 import { setupUser, clearUser } from '../call/apiVats.js'
+import { logger } from "../be/logger.js"
 import tickets from '../be/tickets.js';
 import slack from '../be/slack.js'
 import dotenv from 'dotenv';
@@ -23,70 +24,74 @@ function sendMessage(text, buttons) {
 const bot = new Telegraf(String(tokenBot));
 
 bot.help((ctx) => {
-  console.log(`[BOT] insert command '/help'`)
+  logger.log({ level: 'info', label: 'bot', message: `Insert command '/help'`, })
   inputMessage = ctx
-  console.log(`[BOT] send instruction`)
-  const comьands = [
+  logger.log({ level: 'info', label: 'bot', subLable: 'help', message: `Send instruction`, })
+  const commands = [
     "/start - Настраивает сотрудника в ВАТС, включает сервис получения обращений, включает оповещения о событиях и последующие звонки",
     "/stop - Удаляет настройку сотрудника в ВАТС, отключает получение обращений и оповещения о событиях",
     "/ack 000000 - Подтверждает обращение номер 000000 и отменяет последующий звонок по нему",
     "/slack - Подтверждает ВСЕ полученные сообщения от SLACK и отключает оповещения по ним",
     "/getUnackedTickets - возвращает список тикетов, находящихся без подтверждения",
   ]
-  sendMessage(comьands.join('\n'))
+  sendMessage(commands.join('\n'))
 })
 
 bot.command('stop', (ctx) => {
   // Остановка отправки оповещений, очистка переадресации у сотрудника
-  console.log(`[BOT] insert command '/stop'`)
+  logger.log({ level: 'info', label: 'bot', message: `Insert command '/stop'`, })
   alertingOn = false
+  logger.log({ level: 'info', label: 'bot', subLable: 'stop', message: `Send request to clear user`, })
   clearUser()
-  console.log(`[BOT][stop] Статус отправки сообщений: ${alertingOn}`);
+  logger.log({ level: 'info', label: 'bot', subLable: 'stop', message: `New alert status: ${alertingOn}`, })
   sendMessage(`Оповещения отключены.\nНомер для сотрудника отключен, переадресация отключена`)
   let intervalId = tickets.getTicketIntervalId()
   if (intervalId) {
     tickets.clearTicketIntervalID()
-    console.log(`[BOT][stop] Fetch ticket have intrevalId: ${intervalId}, now it\`s clearing: ${tickets.getTicketIntervalId()}`)
+    logger.log({ level: 'info', label: 'bot', subLable: 'stop', message: `Fetch ticket have intrevalId: ${intervalId}, now it\`s clearing: ${tickets.getTicketIntervalId()}`, })
   } else {
-    console.log(`[BOT][stop] Fetch ticket have not intrevalId: ${intervalId}, nothing to clear`)
+    logger.log({ level: 'info', label: 'bot', subLable: 'stop', message: `Fetch ticket have not intrevalId: ${intervalId}, nothing to clear`, })
   }
 })
 
 bot.command('start', (ctx) => {
   // Включение оповещений, настройка сотрудника для звонков
-  console.log(`[BOT] insert command '/start'`)
+  logger.log({ level: 'info', label: 'bot', message: `insert command '/start'`, })
   inputMessage = ctx
   alertingOn = true
+  logger.log({ level: 'info', label: 'bot', subLable: 'start', message: `Send request to setup user`, })
   setupUser()
-  console.log(`[BOT][start] Статус отправки сообщений: ${alertingOn}`);
+  logger.log({ level: 'info', label: 'bot', subLable: 'start', message: `New alert status: ${alertingOn}`, })
   sendMessage(`Оповещения включены.\nДля сотрудника ${process.env.VATS_USER} был назначен номер для оповещений ${process.env.VATS_TELNUM}`)
   let intervalId = tickets.getTicketIntervalId()
   if (intervalId) {
-    // let intervalId = 
+    logger.log({ level: 'info', label: 'bot', subLable: 'start', message: `Fetch ticket have intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`, })
     tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, Number(process.env.FETCH_TIME)))
-    console.log(`[BOT][start] Fetch ticket have intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`)
   } else {
+    logger.log({ level: 'info', label: 'bot', subLable: 'start', message: `Fetch ticket have not intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`, })
     tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, Number(process.env.FETCH_TIME)))
-    console.log(`[BOT][start] Fetch ticket have not intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`)
   }
-
 });
 
 bot.command('ack', (ctx) => {
   // "Подтверждение" оповещения о тикете.
+  logger.log({ level: 'info', label: 'bot', message: `Insert command '/ack'`, })
   let ticket_id = Number(ctx.update.message.text.replace('/ack ', ''))
+  logger.log({ level: 'info', label: 'bot', subLable: 'ack', message: `Ticket: ${ticket_id}`, })
   tickets.ackTicket(ticket_id)
   ctx.reply(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket().length}`)
 });
 
 bot.command('slack', (ctx) => {
   // "Подтверждение" оповещения об уведомлении в слаке.
+  logger.log({ level: 'info', label: 'bot', message: `Insert command '/slack'`, })
   slack.ackSlackNotification()
-  console.log('Stop alerting on slack push notification')
+  logger.log({ level: 'info', label: 'bot', subLable: 'slack', message: `Stop alerting on slack push notification`, })
   sendMessage('Все предыдущие оповещения были помечены, звонки по ним отключены')
 });
 
 bot.command('getUnackedTickets', (ctx) => {
+  logger.log({ level: 'info', label: 'bot', message: `Insert command '/getUnackedTickets'`, })
   inputMessage = ctx
   const unacked = tickets.getUnAckedTicket()
   if (unacked.length > 0) {
@@ -94,8 +99,10 @@ bot.command('getUnackedTickets', (ctx) => {
     unacked.forEach((ticket) => {
       string += `#${ticket.ticket.id} - ${(ticket.ticket.sla) ? String(Math.floor((Date.parse(ticket.ticket.sla) - Date.now()) / 60000)) + "min" : "not SLA"}; Time to alert call: ${Math.floor((Date.now() - ticket.alertTime) / 60000)} min\n`
     })
+    logger.log({ level: 'info', label: 'bot', subLable: 'slack', message: `Un acked tickets: ${string}`, })
     sendMessage(string)
   } else {
+    logger.log({ level: 'info', label: 'bot', subLable: 'slack', message: `Un acked tickets are empty`, })
     sendMessage("Тикеты, требующие внимания отсуствуют")
   }
 })
@@ -104,27 +111,30 @@ bot.action('ack', (ctx) => {
   // @ts-ignore
   let ticket_id = Number(ctx.update.callback_query.message.text.match(/^#(\d+)/gm)[0].replace('#', ''))
   tickets.ackTicket(ticket_id)
+  logger.log({ level: 'info', label: 'bot', subLable: 'action', message: `Ack ${ticket_id}`, })
   ctx.reply(`Ack the ticket: #${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket().length}`)
 })
 
 bot.action('ackSlack', (ctx) => {
   slack.ackSlackNotification()
-  console.log('Stop alerting on slack push notification')
+  logger.log({ level: 'info', label: 'bot', subLable: 'action', message: `Ack slack. Stop alerting on slack push notification`, })
   sendMessage('Все предыдущие оповещения были помечены, звонки по ним отключены')
 })
 
 bot.launch();
 
-console.log('Bot is starting');
+logger.log({ level: 'info', label: 'server', message: `Bot is starting`, })
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 function getAlertingStatus() {
+  logger.log({ level: 'info', label: 'bot', message: `Send alert status: ${alertingOn}`, })
   return alertingOn
 }
 
 function getInputMessage() {
+  logger.log({ level: 'info', label: 'bot', message: `Send inputMessage object`, })
   return inputMessage
 }
 

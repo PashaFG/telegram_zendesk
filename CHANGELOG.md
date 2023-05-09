@@ -1,3 +1,6 @@
+# v3.1.0
+- add logger
+
 # v3.0.3
 - refactor SLA format to message on tg bot
 

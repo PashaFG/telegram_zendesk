@@ -1,6 +1,6 @@
 {
   "name": "telegram_zendesk",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Alarm bot for zendesk. Fuck the sleep",
   "scripts": {
     "serve": "nodemon be/server.js",

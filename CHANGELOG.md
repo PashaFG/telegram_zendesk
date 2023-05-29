@@ -1,3 +1,10 @@
+# v3.1.1
+- fix [Object object] and [Object Response] in logger
+- fix error on tg bot command /stop
+- fix error PayloadTooLargeError: request entity too large
+- add some logs
+- add `/status` for telegram bot
+
 # v3.1.0
 - add logger
 

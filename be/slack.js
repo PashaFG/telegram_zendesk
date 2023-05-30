@@ -17,7 +17,7 @@ function checkMessage(message) {
       logger.log({ level: 'info', label: 'slack', subLabel: 'checkMessage', message: `Notification has emergency type`, })
       return {
         type: "emergency",
-        message: `**ВАЖНО**\nУведомление в слаке:\n${message.content}`
+        message: `❗ВАЖНО❗\nУведомление в слаке:\n${message.content}`
       }
     } else {
       logger.log({ level: 'info', label: 'slack', subLabel: 'checkMessage', message: `Notification has normal type`, })

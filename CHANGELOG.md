@@ -1,3 +1,9 @@
+# v3.1.2
+- fix subtitle in log message in apiVats.js
+- add write status fetching tickets from zen to console
+- add out to console from logger
+- add menu to tg bot
+
 # v3.1.1
 - fix [Object object] and [Object Response] in logger
 - fix error on tg bot command /stop

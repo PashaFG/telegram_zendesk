@@ -7,6 +7,7 @@ const { combine, timestamp, label, printf } = format;
 const PATH_TO_DIR = String(process.env.LOGGER_PATH_TO_DIRECTORY)
 const FILE_MAX_SIZE = Number(process.env.LOGGER_SIZE_LIMIT_FILE) // in MB
 const DIRECTORY_MAX_SIZE = Number(process.env.LOGGER_SIZE_LIMIT_DIRECTORY) // in MB
+
 let currentDate = new Date()
 let current_file = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}.log`
 
@@ -24,6 +25,7 @@ const logConfiguration = {
   transports: [
     new transports.File({ filename: `${PATH_TO_DIR}error.log`, level: 'error' }),
     new transports.File({ filename: `${PATH_TO_DIR}${current_file}` }),
+    new transports.Console({ level: 'warn' })
   ]
 }
 const logger = createLogger(logConfiguration);

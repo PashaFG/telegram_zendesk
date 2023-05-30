@@ -6,7 +6,7 @@ const PORT = process.env.SERVER_PORT
 function writeInstruction() {
   console.log('##### ##### ##### ##### ##### #### ##### #####');
   console.log('##### Place this code in console on slack Web version #####\n\n');
-  console.log(`let socket = new WebSocket('${process.env.SLACK_WS}')\n\nsocket.onmessage = function(event) {\n	let response = JSON.parse(event.data)	\n	if (response.type === "desktop_notification"){\n  	fetch("http://localhost:3002/api/slack", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n      },\n      body: JSON.stringify(response),\n    })\n	}\n}; `);
+  console.log(`let socket = new WebSocket('${process.env.SLACK_WS}')\n\nsocket.onmessage = function(event) {\n  let response = JSON.parse(event.data)	\n  if (response.type === "desktop_notification"){\n    fetch("http://localhost:3002/api/slack", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n      },\n      body: JSON.stringify(response),\n    })\n  }\n}`);
   console.log('\n\n##### ##### ##### ##### ##### #### ##### #####\n\n');
 }
 

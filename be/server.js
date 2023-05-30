@@ -11,8 +11,6 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 browserScript.writeInstruction()
-setInterval(logCleaner, 1000)
-setInterval(checkToSlackCall, 10000)
 
 const PORT = process.env.SERVER_PORT
 
@@ -34,6 +32,27 @@ function checkToSlackCall() {
     logger.log({ level: 'error', label: 'server', message: `${String(e)}`, })
   }
 }
+
+async function writeZenStatus() {
+  // Функция вывода в консоль статуса запросов 
+  try {
+    if (!getAlertingStatus()) { return }
+
+    let intervalId = (tickets.getTicketIntervalId() !== undefined) ? true : false
+    let fetchStatus = await tickets.fetchTicket()
+
+    logger.log({ level: 'warn', label: 'server', message: `\nCurrent request request status: ${(intervalId) ? "Enabled" : "Disabled"};\nTest ticket request: ${(fetchStatus >= 200 && fetchStatus <= 299) ? "Success" : "Error"}` })
+    logger.log({ level: 'info', label: 'server', message: `\nCurrent request request status: ${(intervalId) ? "Enabled" : "Disabled"};\nTest ticket request: ${(fetchStatus >= 200 && fetchStatus <= 299) ? "Success" : "Error"}` })
+  } catch (e) {
+    logger.log({ level: 'error', label: 'server', message: `${String(e)}`, })
+  }
+}
+
+setInterval(logCleaner, 1000)
+setInterval(checkToSlackCall, 10000)
+// @ts-ignore
+setInterval(writeZenStatus, process.env.FETCH_TIME * 10)
+
 
 const app = express();
 // app.use(express.json());
@@ -64,7 +83,7 @@ app.post("/api/tickets", (req, res) => {
           // Формирование текста оповещения
           let text = `#${ticket.id} ${ticket.subject}`
           if (ticket.priority) { text += `\nПриоритет: ${ticket.priority}` }
-          if (ticket.sla) { text += `\nSLA: ${Math.floor((Date.parse(ticket.sla) - Date.now()) / 60000)} min` }
+          if (ticket.sla) { text += `\n❗SLA: ${Math.floor((Date.parse(ticket.sla) - Date.now()) / 60000)} min` }
 
           // Формирование кнопки для перехода к тикету
           let body = {
@@ -72,6 +91,7 @@ app.post("/api/tickets", (req, res) => {
               inline_keyboard: [[
                 { text: `Перейти к тикету: #${ticket.id}`, url: ticket.link },
                 { text: `ack: #${ticket.id}`, callback_data: 'ack' },
+                { text: `ack all`, callback_data: 'ackAllTickets' },
               ]]
             }
           }
@@ -103,7 +123,7 @@ app.post("/api/slack", (req, res) => {
   // Получение нотификации от slack
   try {
     logger.log({ level: 'info', label: 'server', message: `Receipt request on endpoint: "/api/slack"`, })
-    // logger.log({ level: 'info', label: 'server', message: `Request body:  ${req.body}`, })
+    // logger.log({ level: 'info', label: 'server', message: `Request body:  ${JSON.stringify(req.body)}`, })
     res.send("OK")
     if (getAlertingStatus()) {
       logger.log({ level: 'info', label: 'server', message: `Receipt alert status: ${getAlertingStatus()}`, })

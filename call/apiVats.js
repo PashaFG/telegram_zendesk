@@ -60,10 +60,10 @@ function setupUser() {
     })
     .then((json) => {
       if (json.errors) {
-        logger.log({ level: 'error', label: 'apiVats', subLabel: 'callUsers', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
-        logger.log({ level: 'error', label: 'apiVats', subLabel: 'callUsers', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
+        logger.log({ level: 'error', label: 'apiVats', subLabel: 'setupUser', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
+        logger.log({ level: 'error', label: 'apiVats', subLabel: 'setupUser', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
       } else {
-        logger.log({ level: 'info', label: 'apiVats', subLabel: 'callUsers', message: `=Body: ${JSON.stringify(json)}`, })
+        logger.log({ level: 'info', label: 'apiVats', subLabel: 'setupUser', message: `=Body: ${JSON.stringify(json)}`, })
       }
     });
 }
@@ -94,10 +94,10 @@ function clearUser() {
     })
     .then((json) => {
       if (json.errors) {
-        logger.log({ level: 'error', label: 'apiVats', subLabel: 'callUsers', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
-        logger.log({ level: 'error', label: 'apiVats', subLabel: 'callUsers', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
+        logger.log({ level: 'error', label: 'apiVats', subLabel: 'clearUser', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
+        logger.log({ level: 'error', label: 'apiVats', subLabel: 'clearUser', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
       } else {
-        logger.log({ level: 'info', label: 'apiVats', subLabel: 'callUsers', message: `Body: ${JSON.stringify(json)}`, })
+        logger.log({ level: 'info', label: 'apiVats', subLabel: 'clearUser', message: `Body: ${JSON.stringify(json)}`, })
       }
     });
 }
@@ -122,11 +122,11 @@ function getUser() {
     })
     .then((json) => {
       if (json.errors) {
-        logger.log({ level: 'error', label: 'apiVats', subLabel: 'callUsers', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
-        logger.log({ level: 'error', label: 'apiVats', subLabel: 'callUsers', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
+        logger.log({ level: 'error', label: 'apiVats', subLabel: 'getUser', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
+        logger.log({ level: 'error', label: 'apiVats', subLabel: 'getUser', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
         out = json
       } else {
-        logger.log({ level: 'info', label: 'apiVats', subLabel: 'callUsers', message: `Body: ${JSON.stringify(json)}`, })
+        logger.log({ level: 'info', label: 'apiVats', subLabel: 'getUser', message: `Body: ${JSON.stringify(json)}`, })
         out = json
       }
     });

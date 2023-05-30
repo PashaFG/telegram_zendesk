@@ -1,4 +1,4 @@
-import { Telegraf } from 'telegraf';
+import { Telegraf, Markup } from 'telegraf';
 import { setupUser, clearUser, getUser } from '../call/apiVats.js'
 import { logger } from "../be/logger.js"
 import tickets from '../be/tickets.js';
@@ -35,9 +35,11 @@ bot.help((ctx) => {
     const commands = [
       "/start - Настраивает сотрудника в ВАТС, включает сервис получения обращений, включает оповещения о событиях и последующие звонки",
       "/stop - Удаляет настройку сотрудника в ВАТС, отключает получение обращений и оповещения о событиях",
+      "/status - Выводит информацию о статусе работы процессов бота",
       "/ack 000000 - Подтверждает обращение номер 000000 и отменяет последующий звонок по нему",
       "/slack - Подтверждает ВСЕ полученные сообщения от SLACK и отключает оповещения по ним",
       "/getUnackedTickets - возвращает список тикетов, находящихся без подтверждения",
+      "/ackAllTickets - Подтверждает все обращения и отменяет звонки по ним",
     ]
     sendMessage(commands.join('\n'))
   } catch (e) {
@@ -88,6 +90,15 @@ bot.command('start', (ctx) => {
       tickets.setTicketIntervalId(setInterval(tickets.fetchTicket, Number(process.env.FETCH_TIME)))
       logger.log({ level: 'info', label: 'bot', subLabel: 'start', message: `Fetch ticket have not intrevalId: ${intervalId}, now it\`s set to: ${tickets.getTicketIntervalId()}`, })
     }
+    logger.log({ level: 'info', label: 'bot', subLabel: 'start', message: `Setup menu for tg bot`, })
+    return ctx.reply('Setup menu', Markup
+      .keyboard([
+        ['/start', '/stop', '/status', '/help'], // Row 1 
+        ['/getUnackedTickets', '/ackAllTickets', '/slack'], // Row 2 
+      ])
+      .oneTime()
+      .resize()
+    )
   } catch (e) {
     logger.log({ level: 'error', label: 'bot', subLabel: 'start', message: `${String(e)}` })
   }
@@ -100,11 +111,24 @@ bot.command('ack', (ctx) => {
     let ticket_id = Number(ctx.update.message.text.replace('/ack ', ''))
     logger.log({ level: 'info', label: 'bot', subLabel: 'ack', message: `Ticket: ${ticket_id}`, })
     tickets.ackTicket(ticket_id)
-    ctx.reply(`Ack the ticket: ${ticket_id}\nCount unacked tickets: ${tickets.getUnAckedTicket().length}`)
+    sendMessage(`Подтверждён тикет: ${ticket_id}\nКол-во тикетов без подтверждения: ${tickets.getUnAckedTicket().length}`)
   } catch (e) {
     logger.log({ level: 'error', label: 'bot', subLabel: 'ack', message: `${String(e)}` })
   }
 });
+
+bot.command('ackAllTickets', (ctx) => {
+  try {
+    // "Подтверждение" оповещения обо всех тикетах.
+    logger.log({ level: 'info', label: 'bot', message: `Insert command '/ackAllTickets'`, })
+    inputMessage = ctx
+    logger.log({ level: 'info', label: 'bot', subLabel: 'ackAllTickets', message: `Clear all un acked tickets`, })
+    tickets.clearUnAckedTicket()
+    sendMessage(`Оповещения по всем тикетам были отключены\nКол-во тикетов без подтверждения: ${tickets.getUnAckedTicket().length}`)
+  } catch (e) {
+    logger.log({ level: 'error', label: 'bot', subLable: 'ackAllTickets', message: `${String(e)}` })
+  }
+})
 
 bot.command('slack', (ctx) => {
   try {
@@ -155,10 +179,21 @@ bot.command('status', async (ctx) => {
     logger.log({ level: 'info', label: 'bot', subLabel: 'status', message: `Vats: ${(vatsStatus) ? "OK" : "error"}; User: ${(userSettings) ? "OK" : "not configured"}; Fetching tickets: ${(intervalId) ? "OK" : "is not fetching"}; Fetch status: ${(fetchStatus >= 200 && fetchStatus <= 299) ? "OK" : "error"}`, })
 
     sendMessage(`Доступность интеграции с ВАТС: ${(vatsStatus) ? "OK" : "ошибка"}; \nНастройка сотрудника: ${(userSettings) ? "Выполнена" : "Сотрудник не настроен"}; \nПроцесс запроса обращений: ${(intervalId) ? "OK" : "Процесс не запущен"}; \nТестовый запрос обращения: ${(fetchStatus >= 200 && fetchStatus <= 299) ? "OK" : "error"}`)
-
-
   } catch (e) {
     logger.log({ level: 'error', label: 'bot', subLabel: 'status', message: `${String(e)}` })
+  }
+})
+
+bot.action('ackAllTickets', (ctx) => {
+  try {
+    // "Подтверждение" оповещения обо всех тикетах.
+    logger.log({ level: 'info', label: 'bot', message: `Insert command '/ackAllTickets'`, })
+    inputMessage = ctx
+    logger.log({ level: 'info', label: 'bot', subLabel: 'ackAllTickets', message: `Clear all un acked tickets`, })
+    tickets.clearUnAckedTicket()
+    sendMessage(`Оповещения по всем тикетам были отключены\nКол-во тикетов без подтверждения: ${tickets.getUnAckedTicket().length}`)
+  } catch (e) {
+    logger.log({ level: 'error', label: 'bot', subLable: 'ackAllTickets', message: `${String(e)}` })
   }
 })
 

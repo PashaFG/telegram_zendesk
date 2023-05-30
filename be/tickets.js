@@ -82,6 +82,12 @@ function getUnAckedTicket() {
   logger.log({ level: 'info', label: 'tickets', subLabel: 'getUnAckedTicket', message: `Unacked tickets: ${JSON.stringify(unAckTickets)}`, })
   return unAckTickets
 }
+
+function clearUnAckedTicket() {
+  unAckTickets.splice(0)
+  logger.log({ level: 'info', label: 'tickets', subLabel: 'clearUnAckedTicket', message: `Full clear un acked tickets. Now count tickets to alert: ${unAckTickets.length}` })
+}
+
 async function fetchTicket() {
   try {
     logger.log({ level: 'info', label: 'tickets', subLabel: 'fetchTicket', message: `Fetch tickets`, })
@@ -132,6 +138,7 @@ export default {
   checkDiffTickets,
   ackTicket,
   getUnAckedTicket,
+  clearUnAckedTicket,
   fetchTicket,
   setTicketIntervalId,
   getTicketIntervalId,

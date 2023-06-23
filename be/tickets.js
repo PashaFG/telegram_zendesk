@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { logger } from "./logger.js"
+import { getAlertingStatus } from '../tg/bot.js'
 import dotenv from 'dotenv';
 dotenv.config()
-
 
 let oldTickets = []
 let newTickets = []
@@ -20,7 +21,8 @@ function matchTickets(rawArray) {
       status: row.ticket?.status,
       link: `https://${process.env.ZENDESK_DOMAIN}/agent/tickets/${row.ticket_id}`,
       priority: row.ticket?.priority,
-      sla: row.sla_next_breach_at
+      sla: row.sla_next_breach_at,
+      assigned: row.assignee_id
     })
   })
   logger.log({ level: 'info', label: 'tickets', subLabel: 'matchTickets', message: `Tickets transformed`, })
@@ -77,18 +79,17 @@ function ackTicket(ticket_id) {
   let text = `Ack the ticket: ${ticket_id}\nCount unacked tickets: ${unAckTickets.length}`
   logger.log({ level: 'info', label: 'tickets', subLabel: 'ackTicket', message: `Ack the ticket: ${ticket_id}. Count unacked tickets: ${unAckTickets.length}`, })
 }
-
 function getUnAckedTicket() {
   logger.log({ level: 'info', label: 'tickets', subLabel: 'getUnAckedTicket', message: `Unacked tickets: ${JSON.stringify(unAckTickets)}`, })
   return unAckTickets
 }
-
 function clearUnAckedTicket() {
   unAckTickets.splice(0)
   logger.log({ level: 'info', label: 'tickets', subLabel: 'clearUnAckedTicket', message: `Full clear un acked tickets. Now count tickets to alert: ${unAckTickets.length}` })
 }
 
 async function fetchTicket() {
+  if (!getAlertingStatus()) { return }
   try {
     logger.log({ level: 'info', label: 'tickets', subLabel: 'fetchTicket', message: `Fetch tickets`, })
     logger.log({ level: 'info', label: 'server', message: `HTTPS => https://${process.env.ZENDESK_DOMAIN}/api/v2/views/${process.env.ZENDESK_VIEWS_ID}/execute.json?exclude=sla_next_breach_at`, })
@@ -97,6 +98,9 @@ async function fetchTicket() {
         Cookie: `_zendesk_shared_session=${process.env.ZENDESK_SHARED_SESSION}`
       }
     })
+    if (!response.ok) {
+      throw new Error(`Error! status: ${response.status}`);
+    }
     if (response.ok) {
       logger.log({ level: 'info', label: 'server', message: `HTTPS <= ${response.status} ${response.statusText}`, })
       let json = await response.json();

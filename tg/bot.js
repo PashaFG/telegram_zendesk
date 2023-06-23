@@ -167,7 +167,7 @@ bot.command('status', async (ctx) => {
   try {
     logger.log({ level: 'info', label: 'bot', message: `Insert command '/status'`, })
     inputMessage = ctx
-    let user = getUser()
+    let user = await getUser()
     // @ts-ignore
     let vatsStatus = (!user?.errors) ? true : false
     // @ts-ignore

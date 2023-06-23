@@ -1,3 +1,4 @@
+// @ts-nocheck
 import tickets from "./tickets.js";
 import slack from "./slack.js";
 import { getAlertingStatus, sendMessage } from "../tg/bot.js"
@@ -13,6 +14,7 @@ dotenv.config()
 browserScript.writeInstruction()
 
 const PORT = process.env.SERVER_PORT
+let slackLastMessage
 
 function checkToSlackCall() {
   // Функция проверки необходимости звонка сотруднику
@@ -50,7 +52,6 @@ async function writeZenStatus() {
 
 setInterval(logCleaner, 1000)
 setInterval(checkToSlackCall, 10000)
-// @ts-ignore
 setInterval(writeZenStatus, process.env.FETCH_TIME * 10)
 
 
@@ -123,36 +124,52 @@ app.post("/api/slack", (req, res) => {
   // Получение нотификации от slack
   try {
     logger.log({ level: 'info', label: 'server', message: `Receipt request on endpoint: "/api/slack"`, })
-    // logger.log({ level: 'info', label: 'server', message: `Request body:  ${JSON.stringify(req.body)}`, })
+    logger.log({ level: 'info', label: 'server', message: `Request body:  ${JSON.stringify(req.body)}`, })
     res.send("OK")
-    if (getAlertingStatus()) {
-      logger.log({ level: 'info', label: 'server', message: `Receipt alert status: ${getAlertingStatus()}`, })
-      let rawMessage = req.body
-      // Проверка на "Важность" данной нотификации
-      let notification = slack.checkMessage(rawMessage)
-      let body = {
-        reply_markup: {
-          inline_keyboard: [[
-            { text: `ack slack notification`, callback_data: 'ackSlack' },
-          ]]
-        }
-      }
-      // @ts-ignore
-      logger.log({ level: 'info', label: 'server', message: `A message has been generated: Text:${notification.message}; Body: ${JSON.stringify(body)}`, })
-      // @ts-ignore
-      sendMessage(notification.message, body)
-
-      // @ts-ignore
-      if (notification.type === "emergency") {
-        const newTime = Date.now() + Number(process.env.ALERT_TIME_EMERGENCY)
-        logger.log({ level: 'info', label: 'server', message: `Emergency notification type, next call has been: ${new Date(newTime)}`, })
-        slack.setSlackNotification(newTime)
-      } else {
-        const newTime = Date.now() + Number(process.env.ALERT_TIME)
-        logger.log({ level: 'info', label: 'server', message: `Next call has been: ${new Date(newTime)}`, })
-        slack.setSlackNotification(Date.now() + Number(process.env.ALERT_TIME))
-      }
+    if (slackLastMessage === req.body.msg) {
+      // Выход при получение повторного оповещения из Slack на одно и то же событие (Возможно при включении скрипта в нескольких браузерах/вкладках)
+      logger.log({ level: 'info', label: 'server', message: 'Double notification. Skip processing step' })
+      return
     }
+    slackLastMessage = req.body.msg
+
+    const typeRequest = req.body.type
+    switch (typeRequest) {
+      case "desktop_notification":
+        if (getAlertingStatus()) {
+          logger.log({ level: 'info', label: 'server', message: `Receipt alert status: ${getAlertingStatus()}`, })
+          let rawMessage = req.body
+          // Проверка на "Важность" данной нотификации
+          let notification = slack.checkMessage(rawMessage)
+          let body = {
+            reply_markup: {
+              inline_keyboard: [[
+                { text: `ack slack notification`, callback_data: 'ackSlack' },
+              ]]
+            }
+          }
+
+          logger.log({ level: 'info', label: 'server', message: `A message has been generated: Text:${notification.message}; Body: ${JSON.stringify(body)}`, })
+
+          sendMessage(notification.message, body)
+
+
+          if (notification.type === "emergency") {
+            const newTime = Date.now() + Number(process.env.ALERT_TIME_EMERGENCY)
+            logger.log({ level: 'info', label: 'server', message: `Emergency notification type, next call has been: ${new Date(newTime)}`, })
+            slack.setSlackNotification(newTime)
+          } else {
+            const newTime = Date.now() + Number(process.env.ALERT_TIME)
+            logger.log({ level: 'info', label: 'server', message: `Next call has been: ${new Date(newTime)}`, })
+            slack.setSlackNotification(Date.now() + Number(process.env.ALERT_TIME))
+          }
+        }
+        break
+
+      default:
+        return
+    }
+
   } catch (e) {
     logger.log({ level: 'error', label: 'server', message: `${String(e)}`, })
   }

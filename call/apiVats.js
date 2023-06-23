@@ -103,12 +103,10 @@ function clearUser() {
 }
 
 function getUser() {
-  let out
-
   logger.log({ level: 'info', label: 'apiVats', subLabel: 'getUser', message: `Get user ${process.env.VATS_USER} configuration`, })
   logger.log({ level: 'info', label: 'server', message: `HTTPS => https://${process.env.VATS_DOMAIN}/crmapi/v1/users/${process.env.VATS_USER}`, })
 
-  fetch(`https://${process.env.VATS_DOMAIN}/crmapi/v1/users/${process.env.VATS_USER}`, {
+  let out = fetch(`https://${process.env.VATS_DOMAIN}/crmapi/v1/users/${process.env.VATS_USER}`, {
     method: 'GET',
     // @ts-ignore
     headers: {
@@ -124,10 +122,10 @@ function getUser() {
       if (json.errors) {
         logger.log({ level: 'error', label: 'apiVats', subLabel: 'getUser', message: `[ERROR] Body: ${JSON.stringify(json.message)}`, })
         logger.log({ level: 'error', label: 'apiVats', subLabel: 'getUser', message: `[ERROR] Error: ${JSON.stringify(json.errors)}`, })
-        out = json
+        return json
       } else {
         logger.log({ level: 'info', label: 'apiVats', subLabel: 'getUser', message: `Body: ${JSON.stringify(json)}`, })
-        out = json
+        return json
       }
     });
   return out

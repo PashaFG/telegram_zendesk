@@ -1,3 +1,10 @@
+# v3.1.3
+- fix /status for User setting on Vats
+- fix doubled message from slack
+- fix drop ws on browser
+- change browser script
+- remove import dotenv for each files. Now dotenv import globally
+
 # v3.1.2
 - fix subtitle in log message in apiVats.js
 - add write status fetching tickets from zen to console

@@ -23,16 +23,13 @@ let socket = new WebSocket('${process.env.SLACK_WS}')
 let count = 10000 + Math.floor(Math.random() * 1000)
 
 socket.onmessage = function(event) {
-  let response = JSON.parse(event.data)
-  if (response.type === "desktop_notification"){
-    fetch("http://localhost:3002/api/slack", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(response),
-    })
-  }
+  fetch("http://localhost:3002/api/slack", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: event.data,
+  })
 }
 
 const keepAlive = () => {

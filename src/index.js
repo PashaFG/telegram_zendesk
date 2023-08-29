@@ -2,6 +2,7 @@
 
 import appConfig from '#core/config/app_config.js'
 import { AlertList } from '#core/alert/alert_list.js'
+import regexp from './utils/regexp.js'
 import bot from '#inp_out/tg/bot.js'
 import server from '#inp_out/server.js'
 
@@ -18,7 +19,7 @@ setInterval(() => {
       if (element.type === "ticket") {
         const message_text = `${(element.isEmergency) ? '⚠️Emergency⚠️\n' : ''}#${element.body.id}`
 
-        const message = telegramBot.sendMessage(`new alert: ${JSON.stringify(element.type).replaceAll(formattingRegExp, '\\$1')}`)
+        const message = telegramBot.sendMessage(`new alert: ${JSON.stringify(element.type).replaceAll(regexp.formattingRegExp, '\\$1')}`)
 
         message.then((response) => {
           element.tgMessageId = response.result.message_id

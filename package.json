@@ -1,10 +1,12 @@
 {
   "name": "telegram_zendesk",
-  "version": "3.1.3",
+  "version": "4.0.5",
   "description": "Alarm bot for zendesk. Fuck the sleep",
   "scripts": {
     "serve": "nodemon --import dotenv/config be/server.js",
-    "build": "node --import dotenv/config be/server.js"
+    "build": "node --import dotenv/config be/server.js",
+    "startDev": "nodemon --import dotenv/config src/index.js ",
+    "start": "node --import dotenv/config src/index.js "
   },
   "author": "El Pablo",
   "license": "ISC",
@@ -13,12 +15,20 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "nodemon": "^2.0.22",
+    "nodemon": "^3.0.1",
     "ping": "^0.4.4",
     "telegraf": "^4.12.2",
     "winston": "^3.8.2"
   },
   "devDependencies": {
     "concurrently": "^8.0.1"
+  },
+  "imports": {
+    "#root/*": "./*",
+    "#src/*": "./src/*",
+    "#inp_out/*": "./src/inp_out/*",
+    "#utils/*": "./src/utils/*",
+    "#core/*": "./src/core/*",
+    "#appConfig": "./src/core/config/app_config.js"
   }
 }

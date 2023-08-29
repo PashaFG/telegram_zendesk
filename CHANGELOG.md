@@ -1,3 +1,10 @@
+# v4.0.5
+- ready refactoring ticket, tg, slack, server, utils parts of release
+
+# v4.0.0
+- full refactoring release
+
+
 # v3.1.3
 - fix /status for User setting on Vats
 - fix doubled message from slack

@@ -16,8 +16,8 @@ export class Ticket {
 
   #checkEmergency(priority) {
     return (priority !== "hight")
-      ? true
-      : false
+      ? false
+      : true
   }
 
   #remakeUrl(rawUrl) {

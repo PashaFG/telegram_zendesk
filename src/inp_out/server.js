@@ -1,5 +1,6 @@
 // @ts-nocheck
 import appConfig from '#core/config/app_config.js'
+import { logger } from "#utils/logger/logger.js";
 import { ZendeskTickets } from '#inp_out/ticket/zendesk_tickets.js'
 import { ZendeskUsers } from '#inp_out/ticket/zendesk_users.js'
 import { SlackEvent } from '#inp_out/slack/slack_event.js';
@@ -42,7 +43,7 @@ const start = (AlertList, telegramBot) => {
 
   const PORT = appConfig.getKey('server_port')
 
-  app.listen(PORT, () => console.log(`{ level: 'info', label: 'server', message: 'Slack server is running on PORT: ${PORT}', }`))
+  app.listen(PORT, () => logger.log({ level: 'info', label: 'Server', message: `Slack server is running on PORT: ${PORT}`, }))
 }
 
 export default {

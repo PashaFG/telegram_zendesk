@@ -92,7 +92,10 @@ export class ZendeskTickets {
         } else {
           logger.log({ level: 'info', label: 'ZendeskTickets', subLabel: 'fetchTicket', message: `http <= ${response.status}`, })
           this.#reSaveTickets((await response.json()).rows)
-          logger.log({ level: 'info', label: 'ZendeskTickets', subLabel: 'fetchTicket', message: `Fetching tickets: [${this.newTickets.map(ticket => ticket.id).join(';')}] Old tickets: [${this.oldTickets.map(ticket => ticket.id).join(';')}]`, })
+
+          logger.log({ level: 'info', label: 'ZendeskTickets', subLabel: 'fetchTicket', message: `New tickets (Amount=${this.newTickets.length}): [${this.newTickets.map(ticket => ticket.id).join(';')}]`, })
+          logger.log({ level: 'info', label: 'ZendeskTickets', subLabel: 'fetchTicket', message: `Old tickets (Amount=${this.oldTickets.length}): [${this.oldTickets.map(ticket => ticket.id).join(';')}]`, })
+
           if (this.oldTickets.length) {
             this.alertCallback(this.checkTickets(), this.#findResolved())
           }
@@ -106,7 +109,7 @@ export class ZendeskTickets {
   }
 
   async startFetching(delay = 1000 * 60, users) {
-    logger.log({ level: 'info', label: 'ZendeskTickets', message: `Start fetching with delay ${delay}. List of users received: [${users.join(',')}]`, })
+    logger.log({ level: 'info', label: 'ZendeskTickets', message: `Start fetching with delay ${delay}. List of users received, amount users: ${users.length}`, })
     this.users = users
     await this.fetchTickets()
     let intervalId = setInterval(this.fetchTickets.bind(this), delay)

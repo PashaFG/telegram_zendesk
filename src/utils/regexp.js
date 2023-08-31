@@ -1,4 +1,4 @@
-const formattingRegExp = new RegExp(/(\*|_|~|\||\[|\]|\(|\)|\.|`)/gm)
+const formattingRegExp = new RegExp(/(\*|_|~|\||\[|\]|\(|\)|\.|#|-|\+|`)/gm)
 
 export default {
   formattingRegExp

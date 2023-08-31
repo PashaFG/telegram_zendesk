@@ -1,3 +1,6 @@
+# v4.1.0
+- fix "logger is not defined"
+
 # v4.0.5
 - ready refactoring ticket, tg, slack, server, utils parts of release
 

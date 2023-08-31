@@ -1,5 +1,6 @@
 // @ts-nocheck
 import appConfig from '#core/config/app_config.js'
+import { logger } from "#utils/logger/logger.js";
 
 import { AlertEvent } from "./alert_event.js";
 
@@ -60,10 +61,12 @@ export class AlertList {
   }
 
   clearResolvedTickets(ticketsId) {
-    console.log(`[AlertList][clearResolvedTickets] ${JSON.stringify(ticketsId)}`)
     if (!ticketsId.length) {
       return
     }
+
+    logger.log({ level: 'info', label: 'AlertContainer', subLabel: 'clearResolvedTickets', message: `Delete tickets [${ticketsId.join(',')}] from alert list`, })
+
     this.items = this.items.reduce((acc, cur) => {
       return (cur.type !== "ticket" || !ticketsId.includes(cur.body.id))
         ? [...acc, cur]

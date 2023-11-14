@@ -33,9 +33,13 @@ interface Chat {
 
 export type TgMenuButtons = { text: string }[][]
 
-export interface ReplyMarkup {
+export interface TgReplyMarkup {
   inline_keyboard?: [][]
   menuButtons?: TgMenuButtons
+}
+
+export interface UpdateMessageEntity {
+  type: "bot_command"
 }
 
 export interface UpdateMessage {
@@ -49,7 +53,9 @@ export interface UpdateMessage {
   forward_from_chat?: Chat,
   forward_from_message_id?: number,
   forward_signature?: string,
-  reply_to_message?: UpdateMessage
+  reply_to_message?: UpdateMessage,
+  entities: UpdateMessageEntity[],
+  text: string,
 }
 
 export interface UpdateInlineQuery { 

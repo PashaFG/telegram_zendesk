@@ -10,4 +10,4 @@ appConfig.readConfig('./app_config.json')
 
 const alertContainer = new AlertContainer()
 const bot = Bot.start(alertContainer)
-serverStart(alertContainer, bot)
+serverStart(alertContainer)

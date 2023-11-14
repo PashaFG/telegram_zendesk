@@ -1,6 +1,7 @@
-import { TgMenuButtons, ReplyMarkup, UpdateMessage, UpdateCallbackQuery, UpdateChosenInlineResult, UpdateInlineQuery} from "./childs/telegram"
+import { TgMenuButtons, TgReplyMarkup, UpdateMessage, UpdateCallbackQuery, UpdateChosenInlineResult, UpdateInlineQuery} from "./childs/telegram"
 
 export type TgCallbackFunction = (data: Update[]) => void
+export type ReplyMarkup = TgReplyMarkup
 
 export interface TgResponse {
     ok: boolean,

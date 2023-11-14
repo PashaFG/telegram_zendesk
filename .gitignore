@@ -4,3 +4,4 @@ app_config.json
 .env
 logs
 .idea
+.DS_store

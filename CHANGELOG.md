@@ -1,3 +1,7 @@
+# v4.2.1
+- fix typescript errors on telegram definitions 
+- add @types/cors on dev dependens
+
 # v4.2.0
 - edit start script
 - remove some unused parts of project

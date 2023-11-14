@@ -8,11 +8,9 @@ import { ZendeskTickets } from "@core/ticket/zendesk-tickets"
 import { sleep } from "@lib/utils"
 import express  from 'express'
 import cors from 'cors'
+import {Ticket} from "@core/ticket/ticket";
 
 const prefix = "[app]"
-
-let tickets: ZendeskTickets
-
 
 function startExpressServer(alertContainer: AlertContainer, port: number) {
     log(`${prefix} Start express server to get notification from browser`)
@@ -47,8 +45,8 @@ async function startZendesk(alertContainer: AlertContainer) {
 
     tickets.setUsers(users.listUsersId)
 
-    tickets.startAlert((tickets, resolvedTickets) => {
-        alertContainer.addTickets(tickets)
+    tickets.startAlert((inpTickets: Ticket[], resolvedTickets: number[]) => {
+        alertContainer.addTickets(inpTickets)
         tickets.clearUnAckTickets()
 
         alertContainer.clearResolvedTickets(resolvedTickets)
@@ -58,12 +56,12 @@ async function startZendesk(alertContainer: AlertContainer) {
     })
 }
 
-export function start(alertContainer: AlertContainer, bot) {
+export function start(alertContainer: AlertContainer) {
     const serverPort = <number>appConfig.getKey('server_port')
     
     startExpressServer(alertContainer, serverPort)
     printScript(<string>appConfig.getKey('slack.ws_link'), serverPort)
-    startZendesk(alertContainer)
+    startZendesk(alertContainer).then(() => log(`${prefix} Fetch started success`))
 
     setTimeout(() => {
         console.log(getSlackHandshake())

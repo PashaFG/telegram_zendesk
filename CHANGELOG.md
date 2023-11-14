@@ -1,3 +1,44 @@
+# v4.2.0
+- edit start script
+- remove some unused parts of project
+- add clear resolved tickets and off notification from this
+- add own logger to project
+- refactor slack notification
+- refactor project architecture 
+- refactor project to ts
+
+# v4.1.3
+- add setup menu and hello message
+- remove .env.example
+
+# v4.1.2
+- add opportunity to import configuration from v3
+- add some logs
+- add /start to new v4
+- add validation configuration
+- refactor structure registration tg listeners
+- change start bot instance
+- change default configuration, if not present
+- delete examples to messages
+- fix bot instance after start does not start getUpdatesLoop
+- other minor fixes
+
+# v4.1.1
+- refactor message text to notification
+- refactor formatting notification message
+- fix non formatted message
+- add ack and ack_all to tickets notification
+
+# v4.1.0
+- fix "logger is not defined"
+
+# v4.0.5
+- ready refactoring ticket, tg, slack, server, utils parts of release
+
+# v4.0.0
+- full refactoring release
+
+
 # v3.1.3
 - fix /status for User setting on Vats
 - fix doubled message from slack

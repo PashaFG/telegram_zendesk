@@ -1,0 +1,87 @@
+import { Request, Response } from 'express'
+import { log } from "@logger/logger"
+import { AlertContainer } from '@core/alert/alert-container'
+import { SlackEvent } from './slack'
+
+const prefix = "[slack][middleware]"
+
+let lastPingId: number
+let lastPongId: number
+let lastSuccessPingPongSession: number
+let intervalId: NodeJS.Timeout
+
+export function getSlackHandshake() {
+    if (lastPingId && lastPongId) {
+        log(`${prefix} Request to status setup. The initial handshake was successful`)
+        return true
+    }
+
+    log(`${prefix} Request to status setup. The handshake did not take place`)
+    return false
+}
+
+export function getSlackStatus() {
+    const delay = (Date.now() - lastSuccessPingPongSession)
+    log(`${prefix} Request to status connection. Last success ping-pong: ${delay} ms age`)
+    return delay
+}
+
+function setId(id: NodeJS.Timeout) {
+    intervalId = id
+}
+
+function clearId() {
+    clearTimeout(intervalId)
+}
+
+function getPing(id: number): NodeJS.Timeout {
+    log(`${prefix} ping-${id}`)
+    
+    if (!lastPingId) { log(`${prefix} browser script in slack has been started`) }
+    
+    lastPingId = id
+    if (intervalId) { clearId() }
+
+    return setTimeout(() => {
+        log(`${prefix} Pong is not be received. Check browser page and restart script`)
+    }, 60000) // 1 минута указана, на случай каких-либо затупов браузера/сети
+}
+
+function getPong(id: number): NodeJS.Timeout {
+    log(`${prefix} pong-${id}`)
+    if (!lastPongId) { log(`${prefix} Browser can connected to Slack`) }
+    
+    lastPongId = id
+    if (intervalId && lastPingId === id) {
+        clearId()
+        lastSuccessPingPongSession = Date.now()
+    }
+
+    return setTimeout(() => {
+        log(`${prefix} Ping is not be received.`)
+    }, 60000) // 1 минута указана, на случай каких-либо затупов браузера/сети
+}
+
+export function slackMiddleware(req: Request, res: Response, alertContainer: AlertContainer) {
+    let timeoutId: NodeJS.Timeout
+    switch (req.body.type) {
+        case "ping":
+            timeoutId = getPing(req.body.id)
+            setId(timeoutId)
+            break
+        
+        case "pong":
+            timeoutId = getPong(req.body.reply_to)
+            setId(timeoutId)
+            break
+        
+        case "desktop_notification":
+            alertContainer.addSlackEvent(new SlackEvent(req.body))
+            break
+        
+        default:
+            log(`${prefix} Not exist event type: ${req.body.type}`)
+    }
+
+    res.sendStatus(200)
+}

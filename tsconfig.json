@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "skipLibCheck": true,
+        "types": [],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"],
+            "@lib/*": ["src/lib/*"],
+            "@logger/*": ["src/core/logger/*"],
+            "@definitions/*": ["src/definitions/*"],
+            "@config/*": ["src/core/config/*"],
+            "@tg/*": ["src/core/tg/*"],
+            "@core/*": ["src/core/*"]
+        },
+        "lib": ["es2022"],
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "./node_modules",
+        "./node_modules/*",
+        "./node_modules/@types/node/index.d.ts",
+    ]
+}

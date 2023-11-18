@@ -16,7 +16,7 @@ export class Queue {
     return this
   }
 
-  dequeue() {
+  dequeue(...arg: any[]) {
     return this.items.removeFirst();
   }
 
@@ -28,7 +28,7 @@ export class Queue {
     return this.enqueue(...args)
   }
 
-  remove() {
-    return this.dequeue();
+  remove(...args: [any]) {
+    return this.dequeue(...args);
   }
 }

@@ -1,19 +1,29 @@
 import {
     TgMessageLocalData,
     TgMessageOutData,
-    ReplyMarkup,
+    TgResponse,
+    ReplyMarkup
 } from "@definitions/definitions-tg"
 
+const verifyResponse = (response: TgResponse) => {
+    if (response.ok) {
+        return response
+    } else {
+        console.log(response)
+        return false
+    }
+}
 
-const fetchResponseToTelegram = async (url: string, data: TgMessageOutData) => {
-    const response = await fetch(url, {
+const fetchResponseToTelegram = (url: string, data: TgMessageOutData) => {
+    return fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-    });
-    return await response.json();
+    })
+        .then((response) => response.json())
+        .then(verifyResponse)
 }
 
 const send = (url: string, data: TgMessageLocalData) => {

@@ -1,24 +1,13 @@
-# v4.2.2
-- Telegram chat id received from getUpdatesLoop
-- add telegram chat id to app-config
-- add vats-api to setup, get, clear, call user
-- add listeners, texts, keyboards to tg
-- add setup settings from telegram
-- add stop logic
-- add setup zendesk user from tg
-- add eslint, eslint script and add this script to run dev
-
 # v4.2.1
 - fix typescript errors on telegram definitions 
-- add @types/cors on dev dependency
+- add @types/cors on dev dependens
 
 # v4.2.0
 - edit start script
 - remove some unused parts of project
 - add clear resolved tickets and off notification from this
 - add own logger to project
-- refactor 
-- slack notification
+- refactor slack notification
 - refactor project architecture 
 - refactor project to ts
 

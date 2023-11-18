@@ -27,15 +27,15 @@ const LOGGER_CONFIGURATION = {
   dailyRotationCombinedLogs: true,
   fileSizeRotation: {
     enabled: true,
-    limit: 1, // in Mb
+    limit: 1 // in Mb
   },
   fileLimitRotation: {
     enabled: false,
-    limit: 1000, // count limit rows in file
+    limit: 1000 // count limit rows in file
   },
   dirSizeRotation: {
     enabled: true,
-    limit: 100, // in Mb
+    limit: 100 // in Mb
   },
 }
 let fileName: string = toNormalDate(new Date())
@@ -64,7 +64,7 @@ function __file_size_rotation(fileHandle: number) {
   })
 }
 
-function __file_limit_rotation() {
+function __file_limit_rotation(fileHandle: number) {
   if (!LOGGER_CONFIGURATION.dailyRotationCombinedLogs || !LOGGER_CONFIGURATION.fileLimitRotation.enabled) { return }
   fs.readFile(`${LOGGER_CONFIGURATION.logPath}/${fileName}.log`, 'utf-8', (err, data) => {
     if (!err) {
@@ -80,7 +80,7 @@ function __dir_size_rotation() {
   if (!LOGGER_CONFIGURATION.dailyRotationCombinedLogs || !LOGGER_CONFIGURATION.dirSizeRotation.enabled) { return }
 }
 
-function __log(data: logData) {
+function __log(data: any) {
   if (data.level === 0 || data.level > 8) {
     console.error(`Undefined log level: ${data.level} `)
     return
@@ -94,7 +94,7 @@ function __log(data: logData) {
 
   msg += "\n"
     
-  const fullFileName: string[] = []
+  let fullFileName: string[] = []
   if (data.level >= 5) {
     fullFileName.push(`${LOGGER_CONFIGURATION.logPath}/error.log`, `${LOGGER_CONFIGURATION.logPath}/${fileName}.log`)
   } else {
@@ -105,7 +105,7 @@ function __log(data: logData) {
     fs.open(file, 'a', 0x1a4, function (error, fileHandle) {
       if (!error) {
         __file_size_rotation(fileHandle)
-        __file_limit_rotation()
+        __file_limit_rotation(fileHandle)
         __dir_size_rotation()
         // console.log(fileHandle)
         fs.write(fileHandle, msg, null, 'utf-8', function (err) {
@@ -134,45 +134,47 @@ function __log(data: logData) {
  */
 
 export function log(message: string, logLevel: string | number = 2, taskId?: number) {
-  const data: logData = {
+  let data: logData = {
     fileName: (LOGGER_CONFIGURATION.dailyRotationCombinedLogs) ? fileName : 'combined',
     time: toNormalTime(new Date()),
     message,
     taskId,
-    level: (typeof logLevel === 'string') ? LOG_LEVEL_DICTIONARY[logLevel] || 0 : logLevel,
+    level: (typeof logLevel == 'string') ? LOG_LEVEL_DICTIONARY[logLevel] || 0 : logLevel
   }
-  const _ = ({ ...foo } = {}) => () => new Promise(resolve => setTimeout(resolve, 0, foo));
-  aQueue.enqueue(_({ __log, data })).then(({ __log, data }) => __log(data));
+  let _ = ({ ...foo } = {}) => () => new Promise(resolve => setTimeout(resolve, 0, foo));
+  aQueue.enqueue(_({ __log, data })).then(({ __log, data }: any | unknown) => __log(data));
 }
 
-export function debug(message: string, taskId?: number) {
+function debug(message: string, taskId?: number) {
   log(message, 1, taskId)
 }
-export function info(message: string, taskId?: number) {
+function info(message: string, taskId?: number) {
   log(message, 2, taskId)
 }
-export function notice(message: string, taskId?: number) {
+function notice(message: string, taskId?: number) {
   log(message, 3, taskId)
 }
-export function warning(message: string, taskId?: number) {
+function warning(message: string, taskId?: number) {
   log(message, 4, taskId)
 }
-export function error(message: string, taskId?: number) {
+function error(message: string, taskId?: number) {
   log(message, 5, taskId)
 }
-export function critical(message: string, taskId?: number) {
+function critical(message: string, taskId?: number) {
   log(message, 6, taskId)
 }
-export function alert(message: string, taskId?: number) {
+function alert(message: string, taskId?: number) {
   log(message, 7, taskId)
 }
-export function emergency(message: string, taskId?: number) {
+function emergency(message: string, taskId?: number) {
   log(message, 8, taskId)
 }
 
 /** TODO Необходима следующая обработка методов:
  * logger.config() -  конфигурирует сам логер, его поведение, уровни логирование, лимиты директории (по размеру), лимит файла error.log, 
  *                    лимит размера одного файла (по размеру, по занимаемой памяти)
+ * logger.log() - записывает логи (конфигурация передаётся внутри метода - т.е. уровень логироавния и т.д.)
+ * logger.error(), logger.info() ... - для каждого уровня логирования 
  */
 export default {
   log,
@@ -183,5 +185,5 @@ export default {
   error,
   critical,
   alert,
-  emergency,
+  emergency
 }

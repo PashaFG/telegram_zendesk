@@ -19,6 +19,7 @@
             "@core/*": ["src/core/*"]
         },
         "lib": ["es2022"],
+        "removeComments": true
     },
     "include": [
         "src/**/*"

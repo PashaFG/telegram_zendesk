@@ -2,5 +2,9 @@ export interface dictionary {
     [index: string]: number
 }
 export interface logData {
-    [index: string]: string | number | undefined
+    fileName: string
+    time: string
+    message: string
+    level: number
+    taskId?: number
 }

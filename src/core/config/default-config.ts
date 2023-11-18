@@ -1,7 +1,10 @@
 import { Config } from '@definitions/definitions-config'
 
 export const defaultConfig: Config = {
-  bot_token: "",
+  telegram: {
+    chat_id: 0,
+    bot_token: "",
+  },
   server_port: 3002,
   alert: {
     type: "push", // push (only push) / call (push and call)
@@ -10,13 +13,13 @@ export const defaultConfig: Config = {
     slack_alerting: true,
     time: {
       normal: 600000, // ms
-      emergency: 300000 // ms
-    }
+      emergency: 300000, // ms
+    },
   },
   logger: {
     path: "logs/",
     fileSize: 10,
-    dirSize: 256
+    dirSize: 256,
   },
   vats: {
     key: "",
@@ -24,7 +27,7 @@ export const defaultConfig: Config = {
     user: "",
     telnum: {
       real: "",
-      fake: ""
+      fake: "",
     },
   },
   zendesk: {
@@ -32,7 +35,10 @@ export const defaultConfig: Config = {
     view_url: "",
     users_url: "",
     default_group_id: "",
-    user: "",
+    user: {
+      id: 0,
+      name: "",
+    },
     shared_session: "",
   },
   slack: {
@@ -40,7 +46,7 @@ export const defaultConfig: Config = {
     emergency: {
       channel: [],
       people: [],
-      content: []
-    }
+      content: [],
+    },
   },
 }

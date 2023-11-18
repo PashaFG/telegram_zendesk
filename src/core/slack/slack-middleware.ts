@@ -62,7 +62,12 @@ function getPong(id: number): NodeJS.Timeout {
     }, 60000) // 1 минута указана, на случай каких-либо затупов браузера/сети
 }
 
-export function slackMiddleware(req: Request, res: Response, alertContainer: AlertContainer) {
+export function slackMiddleware(req: Request, res: Response, alertContainer: AlertContainer, isNeedToCheck: boolean) {
+    if (!isNeedToCheck) {
+        res.sendStatus(200)
+        return
+    }
+
     let timeoutId: NodeJS.Timeout
     switch (req.body.type) {
         case "ping":

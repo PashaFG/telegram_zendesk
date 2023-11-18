@@ -5,10 +5,10 @@ const prefix = "[telegram][server]"
 let updateId: number = 0
 
 const getUpdates = (url: string) => {
-    let fullUrl = url + "/getUpdates"
+    let fullUrl = url + "/getUpdates?timeout=1"
 
     if (updateId !== 0) {
-        fullUrl += `?offset=${updateId + 1}`
+        fullUrl += `&offset=${updateId + 1}`
     }
 
     return fetch(fullUrl)
@@ -19,7 +19,7 @@ const getUpdates = (url: string) => {
                 return []
             }
 
-            let updates = response.result
+            const updates = response.result
 
             if (!updates?.length) {
             return []

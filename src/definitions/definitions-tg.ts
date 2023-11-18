@@ -1,4 +1,4 @@
-import { TgMenuButtons, TgReplyMarkup, UpdateMessage, UpdateCallbackQuery, UpdateChosenInlineResult, UpdateInlineQuery} from "./childs/telegram"
+import { TgMenuButtons, TgReplyMarkup, UpdateMessage, UpdateCallbackQuery, UpdateChosenInlineResult, UpdateInlineQuery } from "./childs/telegram"
 
 export type TgCallbackFunction = (data: Update[]) => void
 export type ReplyMarkup = TgReplyMarkup
@@ -6,6 +6,27 @@ export type ReplyMarkup = TgReplyMarkup
 export interface TgResponse {
     ok: boolean,
     result?: Update[]
+}
+
+export interface TgRequestResponse {
+    ok: boolean,
+    result: {
+        message_id: number,
+        from: {
+            id: number,
+            is_bot: boolean,
+            first_name: string,
+            username: string
+        }
+        chat: {
+            id: number,
+            first_name: string,
+            username: string,
+            type: string
+        },
+        date: number,
+        text: string
+    },
 }
 
 export interface TgMessageLocalData {
@@ -24,13 +45,13 @@ export interface TgMessageOutData {
 
 export interface TgListeners {
   commands: {
-    [key: string]: (event: any) => {}
+    [key: string]: (event: UpdateMessage) => void
   }
   actions: {
-    [key: string]: (event: any) => {}
+    [key: string]: (event: UpdateCallbackQuery) => void
   }
   messages: {
-    [key: string]: (event: any) => {}
+    [key: string]: (event: UpdateMessage) => void
   } 
 }
 export interface TgConfig {

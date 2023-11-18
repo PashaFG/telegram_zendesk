@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { Config, ValueConfigType } from '@definitions/definitions-config'
 import { defaultConfig } from './default-config'
-import { log } from "@logger/logger"
+import { error, log } from "@logger/logger"
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -51,13 +51,17 @@ const getFullConfig = () => {
 }
 
 const getKey = (key: string): ValueConfigType => {
-  let value: ValueConfigType = structuredClone(appConfig)
+  try {
+    let value: ValueConfigType = structuredClone(appConfig)
 
-  key.split(".").forEach((parentKey) => {
-    value = value[parentKey]
-  })
+    key.split(".").forEach((parentKey) => {
+      value = value[parentKey]
+    })
 
-  return value
+    return value
+  } catch (e) {
+    error(`${prefix} ERROR on read key from config`)
+  }
 }
 
 const setKey = (key: string, value: ValueConfigType) => {
@@ -93,7 +97,7 @@ const checkConfig = () => {
   log(`${prefix} Checking config`)
 
   if (
-    appConfig.bot_token &&
+    appConfig.telegram.bot_token &&
     appConfig.vats.key &&
     appConfig.vats.domain &&
     appConfig.vats.user &&
@@ -116,7 +120,7 @@ const checkConfig = () => {
 const envToJson = () => {
   readConfig()
 
-  setKey('bot_token', process.env.BOT_TOKEN)
+  setKey('telegram.bot_token', process.env.BOT_TOKEN)
   setKey('server_port', Number(process.env.SERVER_PORT))
   setKey('alert.time.normal', Number(process.env.ALERT_TIME))
   setKey('alert.time.emergency', Number(process.env.ALERT_TIME_EMERGENCY))
@@ -159,5 +163,5 @@ export default {
   setKey,
   setKeyWithSave,
   checkConfig,
-  envToJson
+  envToJson,
 }

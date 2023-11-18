@@ -32,9 +32,13 @@ interface Chat {
 }
 
 export type TgMenuButtons = { text: string }[][]
-
+export interface TgKeyboardBuutton {
+  text: string
+  url?: string
+  callback_data?: string
+}
 export interface TgReplyMarkup {
-  inline_keyboard?: [][]
+  inline_keyboard?: TgKeyboardBuutton[][]
   menuButtons?: TgMenuButtons
 }
 

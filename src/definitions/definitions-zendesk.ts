@@ -1,8 +1,4 @@
-import { Ticket } from "@core/ticket/ticket";
-
-export type ZendeskAlertCallback = (inpTickets: Ticket[], resolvedTickets: number[]) => void
-
-interface LocalTicket {
+interface Ticket {
     status: string
     url: string
     priority: string
@@ -12,7 +8,7 @@ export interface TicketEventConfig {
     ticket_id: number
     subject: string
     updated: string
-    ticket: LocalTicket
+    ticket: Ticket
     sla_next_breach_at: number
     assignee_id: number
 }

@@ -21,7 +21,7 @@ export class AutoQueue extends Queue {
       return false
     }
 
-    const item = super.dequeue();
+    let item = super.dequeue();
     if (!item) {
       return false
     }
@@ -29,7 +29,7 @@ export class AutoQueue extends Queue {
     try {
       this._pendingPromise = true
 
-      const payload = await item.action(this);
+      let payload = await item.action(this);
 
       this._pendingPromise = false
       item.resolve(payload)

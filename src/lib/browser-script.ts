@@ -1,9 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-export function script(wsLink: string, port: number) {
+//@ts-nocheck
+export function printScript(wsLink: string, port: number) {
   const fetchUrl = `http://localhost:${port}/api/slack`
 
-  return `let recUrl = "${wsLink}"
+  console.log(`-----     BROWSER SCRIPT     -----
+
+let recUrl = "${wsLink}"
 let socket = new WebSocket(recUrl)
 let count = 10000 + Math.floor(Math.random() * 1000)
 const fetchPost = (data) => {
@@ -31,13 +32,7 @@ const keepAlive = () => {
   fetchPost(body)
   count++
 }
-setInterval(keepAlive, 1000 * 10)`
-}
-
-export function printScript(wsLink: string, port: number) {
-  console.log(`-----     BROWSER SCRIPT     -----
-
-${script(wsLink, port)}
+setInterval(keepAlive, 1000 * 10)
 
 -----     BROWSER SCRIPT     -----`)
 }

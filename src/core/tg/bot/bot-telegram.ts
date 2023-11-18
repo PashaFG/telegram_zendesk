@@ -1,16 +1,7 @@
-import appConfig from '@config/app-config';
 import { getUpdatesLoop } from "./bot-core/server";
-import { del, edit, send } from "./bot-core/send-message";
+import { send, edit, del } from "./bot-core/send-message";
 import { log } from "@logger/logger";
-import {
-  ReplyMarkup,
-  TgBotMenu,
-  TgConfig,
-  TgListeners,
-  TgMessageLocalData,
-  Update,
-} from "@definitions/definitions-tg";
-import { UpdateCallbackQuery, UpdateMessage } from "@definitions/childs/telegram";
+import { TgBotMenu, TgConfig, TgListeners, TgMessageLocalData, Update } from "@definitions/definitions-tg";
 
 const prefix = "[telegram][instance]"
 
@@ -20,7 +11,6 @@ export class BotTelegram {
   listeners: TgListeners;
   chatId: number;
   botMenu: TgBotMenu
-  mainMassageId: number
 
   constructor(cfg: TgConfig) {
     this.apiUrl = `https://api.telegram.org/bot${cfg.token}`;
@@ -29,55 +19,55 @@ export class BotTelegram {
       commands: {},
       actions: {},
       messages: {},
-    }
-    this.chatId = 0;
+    };
+    // TODO сделать нормальный вариант считывания chatId из конфигурации/первого сообщения в /getUpdates
+    this.chatId = 429697785;
     this.botMenu = {
       keyboard: cfg.menuButtons,
       is_persistent: true,
       resize_keyboard: true,
       input_field_placeholder: "menu",
-    }
-    this.mainMassageId = 0
+    };
   }
 
-  private toSend = async (data: TgMessageLocalData) => {
-    return await send(this.apiUrl, data)
+  #toSend(data: TgMessageLocalData) {
+    return send(this.apiUrl, data).then((response) => {
+      return response;
+    });
   }
 
-  command(msg: string, callback: (event: UpdateMessage) => void) {
+  command(msg: string, callback) {
     this.listeners.commands[`/${msg}`] = callback;
   }
 
-  action(msg: string, callback: (event: UpdateCallbackQuery) => void) {
+  action(msg: string, callback) {
     this.listeners.actions[msg] = callback;
   }
 
-  message(msg: string, callback: (event: UpdateMessage) => void) {
+  message(msg: string, callback) {
     this.listeners.messages[msg] = callback;
   }
 
-  setupMenu(text: string) {
-    const body = {
+  setupMenu(text) {
+    return this.#toSend({
       chatId: this.chatId,
       text,
       reply_markup: this.botMenu,
-    }
-
-    return this.toSend(body)
+    });
   }
 
-  sendMessage(text: string, reply_markup: ReplyMarkup = {}) {
-    return this.toSend({
+  sendMessage(text, reply_markup = {}) {
+    return this.#toSend({
       chatId: this.chatId,
       text,
       reply_markup,
     });
   }
 
-  editMessage(id: number, text: string, reply_markup: ReplyMarkup = {}) {
+  editMessage(msg, text, reply_markup = {}) {
     return edit(this.apiUrl, {
       chatId: this.chatId,
-      messageId: id,
+      messageId: msg,
       text,
       reply_markup,
     }).then((response) => {
@@ -85,37 +75,24 @@ export class BotTelegram {
     });
   }
 
-  editMainMessage(text: string) {
-    return edit(this.apiUrl, {
+  deleteMessage(msg) {
+    return del(this.apiUrl, {
       chatId: this.chatId,
-      messageId: this.mainMassageId,
-      text,
-    })
-  }
-
-  async deleteMessage(id: number) {
-    return await del(this.apiUrl, {
-      chatId: this.chatId,
-      messageId: id,
+      messageId: msg,
+    }).then((response) => {
+      return response;
     });
   }
 
-  private setChatId(id = 0) {
-    const configId = <number>appConfig.getKey('telegram.chat_id')
-    if (id && configId === id) return configId
-    this.chatId = id ? id : configId
-    appConfig.setKeyWithSave('telegram.chat_id', this.chatId)
-  }
-
-  private actionEvent(event: Update) {
+  #actionEvent(event: Update) {
     log(`${prefix} Received action`);
-    this.setChatId(event.callback_query.from.id)
+    this.chatId = event.callback_query.from.id;
 
-    const action = event.callback_query.data;
+    let action = event.callback_query.data;
     log(`${prefix} Current listeners for actions: [${Object.keys(this.listeners.actions).join(",")}]`);
 
     try {
-      log(`${prefix} Find action "${action}" is ${Object.prototype.hasOwnProperty.call(this.listeners.actions, action)}`);
+      log(`${prefix} Find action "${action}" is ${this.listeners.actions.hasOwnProperty(action)}`);
 
       this.listeners.actions[action](event.callback_query);
     } catch (e) {
@@ -123,15 +100,15 @@ export class BotTelegram {
     }
   }
 
-  private commandEvent(event: Update) {
+  #commandEvent(event: Update) {
     log(`${prefix} Received command`);
-    this.setChatId(event.message.from.id)
+    this.chatId = event.message.from.id;
 
-    const command = event.message.text.trim();
+    let command = event.message.text.trim();
     log(`${prefix} Current listeners for commands: [${Object.keys(this.listeners.commands).join(",")}]`);
 
     try {
-      log(`${prefix} Find command "${command}" is ${Object.prototype.hasOwnProperty.call(this.listeners.commands, command)}`);
+      log(`${prefix} Find action "${command}" is ${this.listeners.commands.hasOwnProperty(command)}`);
 
       this.listeners.commands[command](event.message);
     } catch (e) {
@@ -139,15 +116,15 @@ export class BotTelegram {
     }
   }
 
-  private messageEvent(event: Update) {
+  #messageEvent(event: Update) {
     log(`${prefix} Received simple message`);
-    this.setChatId(event.message.from.id)
+    this.chatId = event.message.from.id;
 
-    const message = event.message.text.trim().split(" ")[0];
+    let message = event.message.text.trim().split(" ")[0];
     log(`${prefix} Current listeners for messages: [${Object.keys(this.listeners.messages).join(",")}]`);
 
     try {
-      log(`${prefix} Find message "${message}" is ${Object.prototype.hasOwnProperty.call(this.listeners.messages, message)}`);
+      log(`${prefix} Find action "${message}" is ${this.listeners.messages.hasOwnProperty(message)}`);
 
       this.listeners.messages[message](event.message);
     } catch (e) {
@@ -155,28 +132,25 @@ export class BotTelegram {
     }
   }
 
-  checkUpdate(event: Update) {
-    if (Object.prototype.hasOwnProperty.call(event, "callback_query")) {
-      this.actionEvent(event)
-      return
-    }
-    if (event?.message?.entities && event.message.entities[0]?.type === "bot_command") {
-      this.commandEvent(event)
-      return
-    }
-    this.messageEvent(event)
-  }
-
-  updatesLoopCallback = (data: Update[]) => {
-    try {
-      data.forEach(data => this.checkUpdate(data))
-    } catch (e) {
-      log(`${prefix} ${String(e)}`);
-    }
-  }
-
   start() {
-    this.setChatId()
-    getUpdatesLoop(this.delay, this.apiUrl, this.updatesLoopCallback)
+    getUpdatesLoop(this.delay, this.apiUrl, (data) => {
+      try {
+        data.forEach((event) => {
+          if (event.hasOwnProperty("callback_query")) {
+            this.#actionEvent(event)
+
+          } else if (event?.message?.entities && event.message.entities[0]?.type === "bot_command") {
+            this.#commandEvent(event)
+
+          } else {
+            this.#messageEvent(event)
+
+          }
+        })
+
+      } catch (e) {
+        log(`${prefix} ${String(e)}`);
+      }
+    });
   }
 }

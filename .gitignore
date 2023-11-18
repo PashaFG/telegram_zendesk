@@ -5,3 +5,4 @@ app_config.json
 logs
 .idea
 .DS_store
+.eslintcache

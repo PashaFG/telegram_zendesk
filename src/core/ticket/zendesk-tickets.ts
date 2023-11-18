@@ -1,7 +1,7 @@
 import appConfig from '@config/app-config'
 import { log } from "@logger/logger.js";
 import { Ticket } from "./ticket";
-import { TicketUsers } from "@definitions/definitions-zendesk"
+import { TicketEventConfig, ZendeskAlertCallback } from "@definitions/definitions-zendesk";
 
 const prefix = "[zendesk-tickets]"
 
@@ -11,8 +11,7 @@ export class ZendeskTickets {
     oldTickets: Ticket[];
     newTickets: Ticket[];
     unAckTickets: Ticket[];
-    interval: NodeJS.Timeout;
-    alertCallback: any;
+    alertCallback: ZendeskAlertCallback;
     users: number[];
     resolvedTickets: number[];
  
@@ -24,12 +23,21 @@ export class ZendeskTickets {
     this.unAckTickets = []
     this.oldTickets = []
     this.resolvedTickets = this.#findResolved()
-    this.interval
     this.alertCallback
     this.users
   }
 
-  #reSaveTickets(rawTickets) {
+  /** TODO
+   * [1] Вынести однотипные проверки в отдельные приватный метод, для лучшей читабельности
+   * [2] Добавить в рамках данного метода игнорирование если единственное изменение - это добавление тега "no replay 1h"
+   *     так же добавить игнорирование тригера на "no reply 1h" в эвенты слака для данного тикета
+   *     возможно данную фичу стоит делать выключаймое из tg, либо отключать только для типа нотификации со звонками,
+   *     чисто для пуш уведомелний - это не критично
+   *     (возможно хорошим решением будет добавить поле no_reply_1h: boolean в класс Ticket)
+   * [3] Добавить оповещение если до конца SLA осталось N времени (пускай задается одним из параметров конфига)
+   */
+
+  #reSaveTickets(rawTickets: TicketEventConfig[]) {
     this.oldTickets = this.newTickets
     this.newTickets = rawTickets.map(ticket => new Ticket(ticket))
   }
@@ -94,10 +102,10 @@ export class ZendeskTickets {
         const url = this.url
         log(`${prefix} http => ${url}`)
 
-        let response = await fetch(url, {
+        const response = await fetch(url, {
           headers: {
-            Cookie: `_zendesk_shared_session=${this.session}`
-          }
+            Cookie: `_zendesk_shared_session=${this.session}`,
+          },
         })
 
         if (!response.ok) {
@@ -106,6 +114,7 @@ export class ZendeskTickets {
         } 
 
         log(`${prefix} http <= ${response.status}`)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.#reSaveTickets((await <any>response.json()).rows)
 
         log(`${prefix} New tickets (Amount=${this.newTickets.length}): [${this.newTickets.map(ticket => ticket.id).join(';')}]`)
@@ -125,13 +134,8 @@ export class ZendeskTickets {
   async startFetching(delay = 1000 * 60) {
     log(`${prefix} Start fetching with delay ${delay}`)
     await this.fetchTickets()
-    let intervalId = setInterval(this.fetchTickets.bind(this), delay)
-    this.interval = intervalId
+    const intervalId = setInterval(this.fetchTickets.bind(this), delay)
     return intervalId
-  }
-  stopFetching() {
-    log(`${prefix} Stop fetching`)
-    clearInterval(this.interval)
   }
 
   checkTickets() {
@@ -150,7 +154,6 @@ export class ZendeskTickets {
     }
   }
 
-    //Must be used, when some user to unsubscribe or stop bot
   clearUnAckTickets() {
     this.unAckTickets.length = 0
   }
@@ -159,7 +162,7 @@ export class ZendeskTickets {
     this.resolvedTickets.length = 0
   }
 
-  startAlert(callback) {
+  startAlert(callback: ZendeskAlertCallback) {
     this.alertCallback = callback
   }
 

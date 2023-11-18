@@ -1,0 +1,37 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "."
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "ignorePatterns": [
+    "node.ts",
+    "queue.ts",
+    "linked-list.ts",
+    "auto-queue.ts"
+  ],
+  "rules": {
+    "no-console": 0,
+    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "eqeqeq": "error",
+    "array-bracket-newline": ["error", { "multiline": true }],
+    "comma-dangle": ["error", "always-multiline"],
+    "comma-style": "error",
+    "key-spacing": "error",
+    "no-multiple-empty-lines": "error",
+    "object-curly-newline": "error",
+    "object-curly-spacing": ["error", "always"]
+  }
+}

@@ -9,7 +9,6 @@ export class ZendeskUsers {
     users: TicketUsers[]
     
     constructor(url: string, session: string) {
-        //TODO url точно должен отличаться от url тикета??
         this.url = url
         this.session = session
         this.users = []
@@ -32,11 +31,14 @@ export class ZendeskUsers {
     const col2 = this.users.slice(part1, part2).sort((a, b) => a.name > b.name ? 1 : -1)
     const col3 = this.users.slice(part2, amountUsers).sort((a, b) => a.name > b.name ? 1 : -1)
     
-    const out: TicketUsers[][] = []
+    const out = []
     for (let i = 0; i < Math.max(col1.length, col2.length, col3.length); i++){
       out.push(
         [col1[i], col2[i], col3[i]]
           .filter(user => !!user)
+          .map(user => {
+            return { text: user.name, callback_data: user.id }
+          })
       )    
     }
 
@@ -52,10 +54,10 @@ export class ZendeskUsers {
       const url = this.url
       log(`${prefix} http => ${url}`)
 
-      const response = await fetch(url, {
+      let response = await fetch(url, {
         headers: {
-          Cookie: `_zendesk_shared_session=${this.session}`,
-        },
+          Cookie: `_zendesk_shared_session=${this.session}`
+        }
       })
 
       if (!response.ok) {

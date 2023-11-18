@@ -21,7 +21,9 @@ export class AlertContainer {
     }
 
     get needAlertCall() {
-        return this.alertTime <= Date.now()
+        return (this.alertTime <= Date.now())
+            ? true
+            : false
     }
 
     #isHaveEmergencyEvent() {

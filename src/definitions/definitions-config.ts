@@ -27,16 +27,12 @@ export interface VatsConfigType {
     user: string,
     telnum: VatsConfigTelnumType,
 }
-export interface ZendeskUserConfigType {
-    id: number,
-    name: string
-}
 export interface ZendeskConfigType {
     domain: string,
     view_url: string,
     users_url: string,
     default_group_id: string,
-    user: ZendeskUserConfigType,
+    user: string,
     shared_session: string,
 }
 export interface SlackConfigEmergencyType {
@@ -49,19 +45,14 @@ export interface SlackConfigType {
     emergency: SlackConfigEmergencyType,
 }
 
-export interface ConfigTelegram {
-    bot_token: string,
-    chat_id: number,
-}
-
 export interface Config {
-    telegram: ConfigTelegram
-    server_port: number,
-    alert: AlertConfigType,
-    logger: LoggerConfigType,
-    vats: VatsConfigType,
-    zendesk: ZendeskConfigType,
-    slack: SlackConfigType,
+  bot_token: string,
+  server_port: number,
+  alert: AlertConfigType,
+  logger: LoggerConfigType,
+  vats: VatsConfigType,
+  zendesk: ZendeskConfigType,
+  slack: SlackConfigType,
 }
 
-export type ValueConfigType = boolean | string | number | string[] | AlertConfigTimeType | AlertConfigType | LoggerConfigType | VatsConfigTelnumType | VatsConfigType | ZendeskUserConfigType | ZendeskConfigType | SlackConfigEmergencyType | SlackConfigType | Config
+export type ValueConfigType = string | number | string[] | AlertConfigTimeType | AlertConfigType | LoggerConfigType | VatsConfigTelnumType | VatsConfigType | ZendeskConfigType | SlackConfigEmergencyType | SlackConfigType | Config

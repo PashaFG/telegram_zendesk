@@ -5,7 +5,7 @@ export class Ticket {
     subject: string
     dateUpdate: string
     status: string
-    link: string
+    link: any
     priority: string
     sla: number
     assigned: number

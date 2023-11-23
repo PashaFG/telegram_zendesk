@@ -1,3 +1,6 @@
+# v4.2.5
+- fix set and check alert time before calling
+
 # v4.2.4
 - add slack notification on drop browser script
 - add push on tickets events

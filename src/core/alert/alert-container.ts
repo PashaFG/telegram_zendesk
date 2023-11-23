@@ -13,7 +13,7 @@ export class AlertContainer {
     
     constructor() {
         this.items = []
-        this.alertTime
+        this.alertTime = 0
     }
 
     get length() {
@@ -21,6 +21,9 @@ export class AlertContainer {
     }
 
     get needAlertCall() {
+        if (!this.alertTime) return false
+        log(`${prefix} Alert is coming after ${this.alertTime - Date.now()}ms`)
+
         return this.alertTime <= Date.now()
     }
 
@@ -33,6 +36,7 @@ export class AlertContainer {
     }
 
     setNewAlertCallTime(force: boolean = false) {
+        log(`${prefix} Set new alert time`)
         // every time need to reread config value
         const newAlertTime = (this.isHaveEmergencyEvent)
             ? Date.now() + <number>appConfig.getKey('alert.time.emergency')
@@ -40,6 +44,9 @@ export class AlertContainer {
 
         if (force || !this.alertTime || this.alertTime <= Date.now() || this.alertTime > newAlertTime) {
             this.alertTime = newAlertTime
+            log(`${prefix} New alert time ${newAlertTime}`)
+        } else {
+            log(`${prefix} Alert time is not changeable`)
         }
     }
 

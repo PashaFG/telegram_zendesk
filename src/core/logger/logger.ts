@@ -1,24 +1,13 @@
 import fs from 'fs';
 import { AutoQueue } from '@lib/auto-queue';
 import { toNormalDate, toNormalDateAndTime, toNormalTime } from '@lib/dates'
-import { logData } from '@definitions/definitions-logger';
-import { dictionary } from "@definitions/common";
+import { logData, loggerConfig, logLevel } from '@definitions/definitions-logger';
 
 fs.mkdirSync('logs', { recursive: true });
 
 const aQueue = new AutoQueue()
 
-const LOG_LEVEL_DICTIONARY: dictionary = {
-  "debug": 1,
-  "info": 2,
-  "notice": 3,
-  "warning": 4,
-  "error": 5,
-  "critical": 6,
-  "alert": 7,
-  "emergency": 8,
-}
-const LOGGER_CONFIGURATION = {
+const LOGGER_CONFIGURATION: loggerConfig = {
   logPath: 'logs',
   dailyRotationCombinedLogs: true,
   fileSizeRotation: {
@@ -91,7 +80,7 @@ function __log(data: logData) {
   msg += "\n"
     
   const fullFileName: string[] = []
-  if (data.level >= 5) {
+  if (data.level >= logLevel.Error) {
     fullFileName.push(`${LOGGER_CONFIGURATION.logPath}/error.log`, `${LOGGER_CONFIGURATION.logPath}/${fileName}.log`)
   } else {
     fullFileName.push(`${LOGGER_CONFIGURATION.logPath}/${fileName}.log`)
@@ -129,41 +118,41 @@ function __log(data: logData) {
  * [8] emergency — Система не работает
  */
 
-export function log(message: string, logLevel: string | number = 2, taskId?: number) {
+export function log(message: string, level: number = logLevel.Info, taskId?: number) {
   const data: logData = {
     fileName: (LOGGER_CONFIGURATION.dailyRotationCombinedLogs) ? fileName : 'combined',
     time: toNormalTime(new Date()),
     message,
     taskId,
-    level: (typeof logLevel === 'string') ? LOG_LEVEL_DICTIONARY[logLevel] || 0 : logLevel,
+    level,
   }
   const _ = ({ ...foo } = {}) => () => new Promise(resolve => setTimeout(resolve, 0, foo));
   aQueue.enqueue(_({ __log, data })).then(({ __log, data }) => __log(data));
 }
 
 export function debug(message: string, taskId?: number) {
-  log(message, 1, taskId)
+  log(message, logLevel.Debug, taskId)
 }
 export function info(message: string, taskId?: number) {
-  log(message, 2, taskId)
+  log(message, logLevel.Info, taskId)
 }
 export function notice(message: string, taskId?: number) {
-  log(message, 3, taskId)
+  log(message, logLevel.Notice, taskId)
 }
 export function warning(message: string, taskId?: number) {
-  log(message, 4, taskId)
+  log(message, logLevel.Warning, taskId)
 }
 export function error(message: string, taskId?: number) {
-  log(message, 5, taskId)
+  log(message, logLevel.Error, taskId)
 }
 export function critical(message: string, taskId?: number) {
-  log(message, 6, taskId)
+  log(message, logLevel.Critical, taskId)
 }
 export function alert(message: string, taskId?: number) {
-  log(message, 7, taskId)
+  log(message, logLevel.Alert, taskId)
 }
 export function emergency(message: string, taskId?: number) {
-  log(message, 8, taskId)
+  log(message, logLevel.Emergency, taskId)
 }
 
 export default {

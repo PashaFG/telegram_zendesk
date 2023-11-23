@@ -7,7 +7,7 @@ export class Ticket {
     status: string
     link: string
     priority: string
-    sla: number
+    sla: string
     assigned: number
     isEmergency: boolean
     
@@ -23,13 +23,11 @@ export class Ticket {
     this.isEmergency = this.#checkEmergency(data.ticket.priority)
   }
 
-  #checkEmergency(priority): boolean {
-    return (priority !== "hight")
-      ? false
-      : true
+  #checkEmergency(priority: string): boolean {
+    return priority === "high"
   }
 
-  #remakeUrl(rawUrl) {
+  #remakeUrl(rawUrl: string) {
     return rawUrl.replaceAll(/(api\/v2\/|\.json)/gm, '')
   }
 }

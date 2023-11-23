@@ -1,8 +1,8 @@
-node_modules
 dist
-app_config.json
-.env
 logs
+node_modules
+.env
+.eslintcache
+app_config.json
 .idea
 .DS_store
-.eslintcache

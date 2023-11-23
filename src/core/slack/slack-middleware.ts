@@ -65,7 +65,14 @@ function getPong(id: number, slackPingPongSendMessage: VoidFunction): NodeJS.Tim
     }, 60000) // 1 минута указана, на случай каких-либо затупов браузера/сети
 }
 
-export function slackMiddleware(req: Request, res: Response, alertContainer: AlertContainer, isNeedToCheck: boolean, slackPingPongSendMessage: VoidFunction) {
+export function slackMiddleware(
+    req: Request,
+    res: Response,
+    alertContainer: AlertContainer,
+    isNeedToCheck: boolean,
+    slackPingPongSendMessage: VoidFunction,
+    slackAlert
+) {
     if (!isNeedToCheck) {
         res.sendStatus(200)
         return
@@ -84,7 +91,7 @@ export function slackMiddleware(req: Request, res: Response, alertContainer: Ale
             break
         
         case "desktop_notification":
-            alertContainer.addSlackEvent(new SlackEvent(req.body))
+            slackAlert(new SlackEvent(req.body))
             break
         
         default:

@@ -1,6 +1,7 @@
 export enum VatsMethod  {
     POST = "POST",
-    GET = "GET"
+    GET = "GET",
+    PUT = "PUT",
 }
 
 interface VatsMobileRedirect {

@@ -2,6 +2,9 @@ import { capitalize, formattingMsg } from "@lib/formate-message";
 import { PushType, ZendeskAlertingType } from "@definitions/definitions-config";
 import appConfig from "@config/app-config";
 import { script } from "@lib/browser-script";
+import { Ticket } from "@core/ticket/ticket";
+import { slaToTime } from "@lib/dates";
+import { SlackEvent } from "@core/slack/slack";
 
 function code (message: string[] | string) {
     if (Array.isArray(message)) return ['```', ...message, '```']
@@ -131,5 +134,25 @@ export function slackPingPongMessage() {
         'Ping или Pong событие не было получено из браузера',
         'Вкладка была закрыта или выгружена из браузера',
         'Необходима ручная проверка и перезапуск скрипта для Slack',
+    ])
+}
+
+export function ticketMessage(ticket: Ticket) {
+    const isEmergency = ticket.isEmergency ? '❗ВАЖНО Zendesk❗' : 'Zendesk'
+
+    return prepare([
+        isEmergency,
+        `#${ticket.id} ${ticket.subject}`,
+        `Приоритет: ${ticket.priority}`,
+        `❗SLA: ${slaToTime(ticket.sla)}`,
+    ])
+}
+
+export function slackMessage(slackEvent: SlackEvent) {
+    const isEmergency  = slackEvent.isEmergency ? '❗ВАЖНО Slack❗' : 'Slack'
+
+    return prepare([
+        isEmergency,
+        slackEvent.eventContent,
     ])
 }

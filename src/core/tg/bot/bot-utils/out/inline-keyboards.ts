@@ -7,6 +7,12 @@ export function deleteMessageKeyboard(text: string): ReplyMarkup {
     }
 }
 
+export function onlyAckAlert(text: string): ReplyMarkup {
+    return {
+        inline_keyboard: [[{ text, callback_data: 'ack' }]],
+    }
+}
+
 export function zendeskAlertTypeKeyboard(): ReplyMarkup {
     return {
         inline_keyboard: [

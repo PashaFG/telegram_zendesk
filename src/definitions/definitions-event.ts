@@ -1,1 +1,5 @@
-export type EventType = "ticket" | "slack"
+export enum EventType {
+    Ticket = "ticket",
+    Slack = "slack",
+    SlackPingPong = "slackPingPong"
+}

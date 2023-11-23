@@ -1,12 +1,8 @@
 import fs from 'fs';
 import { AutoQueue } from '@lib/auto-queue';
 import { toNormalDate, toNormalDateAndTime, toNormalTime } from '@lib/dates'
-import { dictionary, logData } from '@definitions/definitions-logger';
-
-/**  TODO Дописать логику config(), start().
- * Это необходимо, чтобы можно было импортировать не только функции log, debug...., но и весь инстанс логера, без поломки приложения
- * Так же это позволит конфигрурировать логер не из этогофайла, что даст возможноть вносить изменения "На лету"
-*/
+import { logData } from '@definitions/definitions-logger';
+import { dictionary } from "@definitions/common";
 
 fs.mkdirSync('logs', { recursive: true });
 
@@ -170,10 +166,6 @@ export function emergency(message: string, taskId?: number) {
   log(message, 8, taskId)
 }
 
-/** TODO Необходима следующая обработка методов:
- * logger.config() -  конфигурирует сам логер, его поведение, уровни логирование, лимиты директории (по размеру), лимит файла error.log, 
- *                    лимит размера одного файла (по размеру, по занимаемой памяти)
- */
 export default {
   log,
   debug,

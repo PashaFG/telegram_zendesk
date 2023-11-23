@@ -1,5 +1,13 @@
-export type PushType = "push" | "call"
-export type ZendeskAlertingType = "default" | "user" | "group"
+export enum PushType {
+    Push = "push",
+    Call = "call"
+}
+
+export enum ZendeskAlertingType {
+    Default = "default",
+    User = "user",
+    Group = "group"
+}
 
 export interface AlertConfigTimeType {
       normal: number,

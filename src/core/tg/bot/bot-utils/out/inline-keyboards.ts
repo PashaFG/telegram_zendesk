@@ -1,5 +1,6 @@
 import { ReplyMarkup } from "@definitions/definitions-tg";
 import { TicketUsers } from "@definitions/definitions-zendesk";
+import { Ticket } from "@core/ticket/ticket";
 
 export function deleteMessageKeyboard(text: string): ReplyMarkup {
     return {
@@ -39,5 +40,20 @@ export function notificationTypeKeyboard(): ReplyMarkup {
 export function chooseUserKeyboard(users: TicketUsers[][]): ReplyMarkup {
     return {
         inline_keyboard: users.map(row => row.map(el => ({ text: el.name, callback_data: `zendesk_user_${el.id}` }))),
+    }
+}
+
+export function ticketKeyboard(ticket: Ticket): ReplyMarkup {
+    return {
+        inline_keyboard: [
+            [{ text: `Перейти к #${ticket.id}`, url: ticket.link }],
+            [{ text: "✅ Ack", callback_data: 'ack' },{ text: "✅ Ack All ✅", callback_data: 'ack_all' }],
+        ],
+    }
+}
+
+export function slackKeyboard(): ReplyMarkup {
+    return {
+        inline_keyboard: [[{ text: "✅ Ack", callback_data: 'ack' },{ text: "✅ Ack All ✅", callback_data: 'ack_all' }]],
     }
 }

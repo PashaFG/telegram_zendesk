@@ -62,10 +62,8 @@ export class AlertContainer {
         this.alertTime = 0
     }
 
-    addTickets(tickets: Ticket[], tgMessageId: number) {
-        tickets.forEach((ticket) => {
-            this.addEvent(EventType.Ticket, ticket, tgMessageId)
-        })
+    addTicket(ticket: Ticket, tgMessageId: number) {
+        this.addEvent(EventType.Ticket, ticket, tgMessageId)
     }
 
     addSlackEvent(event: SlackEvent, tgMessageId: number) {

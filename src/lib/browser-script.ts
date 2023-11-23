@@ -13,7 +13,7 @@ const fetchPost = (data) => {
         body: JSON.stringify(data),
     })
 }
-const availableTypes = ["desktop_notification", "ping" "pong"]
+const availableTypes = ["desktop_notification", "ping", "pong"]
 socket.onmessage = function(event) {
     let response = JSON.parse(event.data)
     if (availableTypes.includes(response.type)) {

@@ -64,6 +64,7 @@ async function startZendesk(alertContainer: AlertContainer, zendeskUsers: Zendes
 
 function startCall(alertContainer: AlertContainer) {
     log(`${prefix} Start call control service`)
+
     callIntervalId = setInterval(() => {
         const needCallNow =  alertContainer.needAlertCall
         log(`${prefix} Is need to call? - ${needCallNow}`)
@@ -72,6 +73,7 @@ function startCall(alertContainer: AlertContainer) {
             log(`${prefix} Start calling user`)
 
             callUser()
+            alertContainer.setNewAlertCallTime()
         }
 
     }, 10000)

@@ -7,7 +7,7 @@ import {
   TgBotMenu,
   TgConfig,
   TgListeners,
-  TgMessageLocalData,
+  TgMessageLocalData, TgRequestResponse,
   Update,
 } from "@definitions/definitions-tg";
 import { UpdateCallbackQuery, UpdateMessage } from "@definitions/childs/telegram";
@@ -40,7 +40,7 @@ export class BotTelegram {
     this.mainMassageId = 0
   }
 
-  private toSend = async (data: TgMessageLocalData) => {
+  private toSend = async (data: TgMessageLocalData): Promise<TgRequestResponse> => {
     return await send(this.apiUrl, data)
   }
 
@@ -71,7 +71,7 @@ export class BotTelegram {
       chatId: this.chatId,
       text,
       reply_markup,
-    });
+    })
   }
 
   editMessage(id: number, text: string, reply_markup: ReplyMarkup = {}) {
@@ -80,9 +80,7 @@ export class BotTelegram {
       messageId: id,
       text,
       reply_markup,
-    }).then((response) => {
-      return response;
-    });
+    })
   }
 
   editMainMessage(text: string) {
@@ -93,11 +91,11 @@ export class BotTelegram {
     })
   }
 
-  async deleteMessage(id: number) {
-    return await del(this.apiUrl, {
+  deleteMessage(id: number) {
+    return del(this.apiUrl, {
       chatId: this.chatId,
       messageId: id,
-    });
+    })
   }
 
   private setChatId(id = 0) {

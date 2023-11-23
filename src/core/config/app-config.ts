@@ -84,11 +84,11 @@ const setKeyWithSave = (key: string, value: ValueConfigType) => {
   readConfig()
 }
 
-/* TODO 
+/** @todo
  * finally after every element get ready and config example has final form 
  * need to release check every key to normal/real value
  * 
- * example:
+ * Example:
  * domain mast be domain.com and answer on ping
  * vats mast have all key and normal answer on some REST API requests
  * etc...

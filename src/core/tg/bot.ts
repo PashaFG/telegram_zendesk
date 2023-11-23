@@ -7,16 +7,17 @@ import { setupCommands } from "@tg/bot/bot-utils/command"
 import * as TgText from "@tg/bot/bot-utils/out/text"
 import { TgRequestResponse } from "@definitions/definitions-tg";
 import { ZendeskUsers } from "@core/ticket/zendesk-users";
+import { ZendeskTickets } from "@core/ticket/zendesk-tickets";
 
 const prefix = "[telegram][logics]"
 
-const start = (alertsContainer: AlertContainer, zendeskUsers: ZendeskUsers) => {
+const start = (alertsContainer: AlertContainer, zendeskUsers: ZendeskUsers, tickets: ZendeskTickets) => {
 
   const botConfig = {
     token: <string>appConfig.getKey('telegram.bot_token'),
     delay: 500,
     menuButtons: [
-      [{ text: "/start" }, { text: "/stop" }, { text: "/help" }],
+      [{ text: "/start" }, { text: "/stop" }, { text: "/status" }],
       [{ text: "/notifications_type" }, { text: "/zendesk" }, { text: "/zendesk_work_type" }, { text: "/slack" }],
     ],
   }
@@ -29,7 +30,7 @@ const start = (alertsContainer: AlertContainer, zendeskUsers: ZendeskUsers) => {
   botInstance.start()
 
   setupActions(botInstance, alertsContainer, zendeskUsers)
-  setupCommands(botInstance, alertsContainer, zendeskUsers)
+  setupCommands(botInstance, alertsContainer, zendeskUsers, tickets)
   log(`${prefix} Setup listeners: { commands: [${Object.keys(botInstance.listeners.commands)}], actions: [${Object.keys(botInstance.listeners.actions)}], messages: [${Object.keys(botInstance.listeners.messages)}]}`)
 
   botInstance

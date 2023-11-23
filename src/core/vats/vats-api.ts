@@ -1,6 +1,6 @@
 import appConfig from "@config/app-config"
 import { log } from "@logger/logger.js"
-import { VatsMethod, VatsBody } from "@definitions/definitions-vats"
+import { VatsMethod, VatsBody, VatsUserResponse } from "@definitions/definitions-vats"
 
 const prefix = "[vats-api]"
 
@@ -67,5 +67,5 @@ export async function clearUser() {
 export async function getUser() {
     const user = <string>appConfig.getKey("vats.user")
 
-    return await fetchApi(`user/${user}`, VatsMethod.GET)
+    return <VatsUserResponse>await fetchApi(`user/${user}`, VatsMethod.GET)
 }

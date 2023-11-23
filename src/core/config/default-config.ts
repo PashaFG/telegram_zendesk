@@ -1,4 +1,4 @@
-import { Config } from '@definitions/definitions-config'
+import { Config, PushType, ZendeskAlertingType } from '@definitions/definitions-config'
 
 export const defaultConfig: Config = {
   telegram: {
@@ -7,9 +7,9 @@ export const defaultConfig: Config = {
   },
   server_port: 3002,
   alert: {
-    type: "push", // push (only push) / call (push and call)
+    type: PushType.Call, // push (only push) / call (push and call)
     zendesk_alerting: true,
-    zendesk_alerting_type: "default", // default/user/group
+    zendesk_alerting_type: ZendeskAlertingType.Default, // default/user/group
     slack_alerting: true,
     time: {
       normal: 600000, // ms

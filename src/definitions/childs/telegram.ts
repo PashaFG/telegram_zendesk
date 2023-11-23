@@ -31,15 +31,15 @@ interface Chat {
   pinned_message_date: number
 }
 
-export type TgMenuButtons = { text: string }[][]
-export interface TgKeyboardBuutton {
+export type TgMenuButton = { text: string }
+export interface TgKeyboardButton {
   text: string
   url?: string
   callback_data?: string
 }
 export interface TgReplyMarkup {
-  inline_keyboard?: TgKeyboardBuutton[][]
-  menuButtons?: TgMenuButtons
+  inline_keyboard?: TgKeyboardButton[][]
+  menuButtons?: TgMenuButton[][]
 }
 
 export interface UpdateMessageEntity {

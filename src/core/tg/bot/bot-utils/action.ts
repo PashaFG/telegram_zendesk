@@ -6,6 +6,7 @@ import * as TgText from "@tg/bot/bot-utils/out/text"
 import * as TgKeyboard from "@tg/bot/bot-utils/out/inline-keyboards"
 import appConfig from "@config/app-config"
 import { ZendeskUsers } from "@core/ticket/zendesk-users"
+import { ZendeskAlertingType } from "@definitions/definitions-config";
 
 const prefix = "[telegram]"
 
@@ -20,9 +21,9 @@ const setupActions = (bot: BotTelegram, alertContainer: AlertContainer, zendeskU
         log(`${prefix} Get Action "ack"`)
         log(`${prefix} ack ${id}`)
 
-        const alert = alertContainer.items.find(alert => alert.body.id === id)
+        const alert = alertContainer.items.find(alert => alert.tgMessageId === id)
 
-        bot.deleteMessage(alert.body.id).then(() => {
+        bot.deleteMessage(id).then(() => {
             alertContainer.removeAlert(alert.body.id)
 
             log(`${prefix} Removed: alert ${alert.body.id}, message: ${id}`)
@@ -32,7 +33,7 @@ const setupActions = (bot: BotTelegram, alertContainer: AlertContainer, zendeskU
 
     bot.action("zendesk_alert_default", (message: UpdateCallbackQuery) => {
         log(`${prefix} Get Action "zendesk_alert_default"`)
-        appConfig.setKeyWithSave('alert.zendesk_alerting_type', "default")
+        appConfig.setKeyWithSave('alert.zendesk_alerting_type', ZendeskAlertingType.Default)
 
         bot.editMainMessage(TgText.mainMessage()).then(() => {
             bot.deleteMessage(message.message.message_id)
@@ -41,7 +42,7 @@ const setupActions = (bot: BotTelegram, alertContainer: AlertContainer, zendeskU
 
     bot.action("zendesk_alert_user", async (message: UpdateCallbackQuery) => {
         log(`${prefix} Get Action "zendesk_alert_user"`)
-        appConfig.setKeyWithSave('alert.zendesk_alerting_type', "user")
+        appConfig.setKeyWithSave('alert.zendesk_alerting_type', ZendeskAlertingType.User)
         const zendeskUser = <number>appConfig.getKey('zendesk.user.id')
 
         if (!zendeskUser) {
@@ -61,7 +62,7 @@ const setupActions = (bot: BotTelegram, alertContainer: AlertContainer, zendeskU
 
     bot.action("zendesk_alert_group", (message: UpdateCallbackQuery) => {
         log(`${prefix} Get Action "zendesk_alert_group"`)
-        appConfig.setKeyWithSave('alert.zendesk_alerting_type', "group")
+        appConfig.setKeyWithSave('alert.zendesk_alerting_type', ZendeskAlertingType.Group)
 
         bot.editMainMessage(TgText.mainMessage()).then(() => {
             bot.deleteMessage(message.message.message_id)

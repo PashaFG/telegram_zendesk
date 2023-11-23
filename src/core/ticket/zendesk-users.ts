@@ -9,7 +9,6 @@ export class ZendeskUsers {
     users: TicketUsers[]
     
     constructor(url: string, session: string) {
-        //TODO url точно должен отличаться от url тикета??
         this.url = url
         this.session = session
         this.users = []

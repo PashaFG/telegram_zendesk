@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { log } from "@logger/logger"
 import { AlertContainer } from '@core/alert/alert-container'
 import { SlackEvent } from './slack'
+import { VoidFunction } from "@definitions/common";
 
 const prefix = "[slack][middleware]"
 
@@ -21,7 +22,7 @@ export function getSlackHandshake() {
 }
 
 export function getSlackStatus() {
-    const delay = (Date.now() - lastSuccessPingPongSession)
+    const delay = Date.now() - lastSuccessPingPongSession
     log(`${prefix} Request to status connection. Last success ping-pong: ${delay} ms age`)
     return delay
 }
@@ -34,7 +35,7 @@ function clearId() {
     clearTimeout(intervalId)
 }
 
-function getPing(id: number): NodeJS.Timeout {
+function getPing(id: number, slackPingPongSendMessage: VoidFunction): NodeJS.Timeout {
     log(`${prefix} ping-${id}`)
     
     if (!lastPingId) { log(`${prefix} browser script in slack has been started`) }
@@ -44,10 +45,11 @@ function getPing(id: number): NodeJS.Timeout {
 
     return setTimeout(() => {
         log(`${prefix} Pong is not be received. Check browser page and restart script`)
+        slackPingPongSendMessage()
     }, 60000) // 1 минута указана, на случай каких-либо затупов браузера/сети
 }
 
-function getPong(id: number): NodeJS.Timeout {
+function getPong(id: number, slackPingPongSendMessage: VoidFunction): NodeJS.Timeout {
     log(`${prefix} pong-${id}`)
     if (!lastPongId) { log(`${prefix} Browser can connected to Slack`) }
     
@@ -59,10 +61,11 @@ function getPong(id: number): NodeJS.Timeout {
 
     return setTimeout(() => {
         log(`${prefix} Ping is not be received.`)
+        slackPingPongSendMessage()
     }, 60000) // 1 минута указана, на случай каких-либо затупов браузера/сети
 }
 
-export function slackMiddleware(req: Request, res: Response, alertContainer: AlertContainer, isNeedToCheck: boolean) {
+export function slackMiddleware(req: Request, res: Response, alertContainer: AlertContainer, isNeedToCheck: boolean, slackPingPongSendMessage: VoidFunction) {
     if (!isNeedToCheck) {
         res.sendStatus(200)
         return
@@ -71,12 +74,12 @@ export function slackMiddleware(req: Request, res: Response, alertContainer: Ale
     let timeoutId: NodeJS.Timeout
     switch (req.body.type) {
         case "ping":
-            timeoutId = getPing(req.body.id)
+            timeoutId = getPing(req.body.id, slackPingPongSendMessage)
             setId(timeoutId)
             break
         
         case "pong":
-            timeoutId = getPong(req.body.reply_to)
+            timeoutId = getPong(req.body.reply_to, slackPingPongSendMessage)
             setId(timeoutId)
             break
         

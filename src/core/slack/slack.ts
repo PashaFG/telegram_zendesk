@@ -21,10 +21,16 @@ export class SlackEvent {
     const { channel, people, content } = <SlackConfigEmergencyType>appConfig.getKey('slack.emergency')
     const regexpForContents = new RegExp(`${content.join("|")}`, "i")
 
-    if (channel.includes(this.eventChannel) || people.includes(this.eventSubtitle) || regexpForContents.test(this.eventContent)) {
-      return true
-    }
-
-    return false
+    return channel.includes(this.eventChannel) || people.includes(this.eventSubtitle) || regexpForContents.test(this.eventContent);
   }
+}
+
+export class SlackPingPongEvent {
+    id: number
+    isEmergency: boolean
+
+    constructor(id: number) {
+        this.id = id
+        this.isEmergency = false
+    }
 }

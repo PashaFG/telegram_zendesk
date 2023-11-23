@@ -1,3 +1,8 @@
+# v4.2.3
+- add slack ping pong session alert
+- add /status
+- change some type in definitions
+
 # v4.2.2
 - Telegram chat id received from getUpdatesLoop
 - add telegram chat id to app-config

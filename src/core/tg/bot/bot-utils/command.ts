@@ -1,17 +1,23 @@
+import appConfig from "@config/app-config"
+import { log } from "@logger/logger"
 import { BotTelegram } from "@tg/bot/bot-telegram"
-import { log } from "@logger/logger";
-import { AlertContainer } from "@core/alert/alert-container";
-import { UpdateMessage } from "@definitions/childs/telegram";
-import { start as serverStart, stop as serverStop } from "@core/server";
 import * as TgText from "@tg/bot/bot-utils/out/text"
 import * as TgKeyboard from "@tg/bot/bot-utils/out/inline-keyboards"
-import appConfig from "@config/app-config";
-import { ZendeskUsers } from "@core/ticket/zendesk-users";
+import { AlertContainer } from "@core/alert/alert-container"
+import { getSlackHandshake, getSlackStatus } from "@core/slack/slack-middleware"
+import { start as serverStart, stop as serverStop } from "@core/server"
+import { ZendeskUsers } from "@core/ticket/zendesk-users"
+import * as VatsApi from "@core/vats/vats-api"
+import { UpdateMessage } from "@definitions/childs/telegram"
+import { ZendeskTickets } from "@core/ticket/zendesk-tickets";
+import { TgRequestResponse } from "@definitions/definitions-tg";
+import { EventType } from "@definitions/definitions-event";
+import { SlackPingPongEvent } from "@core/slack/slack";
 
 const prefix = "[telegram][command]"
 let isServerStarted: boolean = false
 
-const setupCommands = (bot: BotTelegram, alertContainer: AlertContainer, zendeskUsers: ZendeskUsers) => {
+const setupCommands = (bot: BotTelegram, alertContainer: AlertContainer, zendeskUsers: ZendeskUsers, tickets: ZendeskTickets) => {
     bot.command("start", (message: UpdateMessage) => {
         log(`${prefix} Get Command "start"`)
 
@@ -37,8 +43,18 @@ const setupCommands = (bot: BotTelegram, alertContainer: AlertContainer, zendesk
         bot.editMainMessage(TgText.mainMessage())
             .then(() => {
                 bot.deleteMessage(message.message_id)
-                serverStart(alertContainer, bot, zendeskUsers)
-                return bot.sendMessage(TgText.slackScriptMessage(), TgKeyboard.deleteMessageKeyboard("Удалить"))
+                const slackPingPongSendMessage = () => {
+                    bot.sendMessage(
+                        TgText.slackPingPongMessage(),
+                        TgKeyboard.onlyAckAlert('Ack')
+                    ).then((res: TgRequestResponse) => {
+                        const messageId = res.result.message_id
+                        alertContainer.addEvent(EventType.SlackPingPong, new SlackPingPongEvent(messageId), messageId)
+                    })
+                }
+
+                serverStart(alertContainer, bot, zendeskUsers, tickets, slackPingPongSendMessage)
+                return bot.sendMessage(TgText.slackScriptMessage(), TgKeyboard.deleteMessageKeyboard("🆗 Удалить"))
             })
     })
 
@@ -47,6 +63,27 @@ const setupCommands = (bot: BotTelegram, alertContainer: AlertContainer, zendesk
         bot.deleteMessage(message.message_id).then(() => {
             serverStop(alertContainer)
             bot.sendMessage(TgText.stopMessage())
+        })
+    })
+
+    bot.command("status", (message: UpdateMessage) => {
+        log(`${prefix} Get Command "status"`)
+        bot.deleteMessage(message.message_id).then(async () => {
+            const mobile = <string>appConfig.getKey("vats.telnum.real")
+            const vatsUser = await VatsApi.getUser()
+
+            const slackHandshake = getSlackHandshake()
+            const slackLastPingPong = getSlackStatus()
+            const vatsConnected = !!vatsUser.message
+            const userIsCorrected = vatsUser.mobile_redirect.enabled && vatsUser.mobile_redirect.forward && vatsUser.mobile === mobile
+            const lastSuccessTicketsRequest = (tickets.lastSuccessTicketsRequest)
+                ? Date.now() - tickets.lastSuccessTicketsRequest
+                : 0
+
+            bot.sendMessage(
+                TgText.statusMessage(slackHandshake, slackLastPingPong, vatsConnected, userIsCorrected, lastSuccessTicketsRequest),
+                TgKeyboard.deleteMessageKeyboard("🆗 Удалить")
+            )
         })
     })
 

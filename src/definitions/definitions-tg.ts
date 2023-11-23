@@ -1,4 +1,4 @@
-import { TgMenuButtons, TgReplyMarkup, UpdateMessage, UpdateCallbackQuery, UpdateChosenInlineResult, UpdateInlineQuery } from "./childs/telegram"
+import { TgMenuButton, TgReplyMarkup, UpdateMessage, UpdateCallbackQuery, UpdateChosenInlineResult, UpdateInlineQuery } from "./childs/telegram"
 
 export type TgCallbackFunction = (data: Update[]) => void
 export type ReplyMarkup = TgReplyMarkup
@@ -57,13 +57,13 @@ export interface TgListeners {
 export interface TgConfig {
   token: string
   delay: number
-  menuButtons: TgMenuButtons
+  menuButtons: TgMenuButton[][]
 }
 export interface TgBotMenu {
-  keyboard: TgMenuButtons
+  keyboard: TgMenuButton[][]
   is_persistent: boolean
   resize_keyboard: true
-  input_field_placeholder: "menu"
+  input_field_placeholder: string
 }
 
 export interface Update {

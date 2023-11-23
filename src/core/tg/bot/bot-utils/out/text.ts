@@ -1,4 +1,4 @@
-import { formattingMsg, capitalize } from "@lib/formate-message";
+import { capitalize, formattingMsg } from "@lib/formate-message";
 import { PushType, ZendeskAlertingType } from "@definitions/definitions-config";
 import appConfig from "@config/app-config";
 import { script } from "@lib/browser-script";
@@ -29,16 +29,16 @@ export function mainMessage() {
     const slackAlert = <boolean>appConfig.getKey('alert.slack_alerting')
     const zendeskUser = <string>appConfig.getKey('zendesk.user.name')
 
-    const text = [`Тип оповещения: ${ alertType === "call" ? "Со звонками" : "Только уведомления" }`]
-    if (alertType === "call") text.push(`Номер для оповещения: ${ telnum }`)
+    const text = [`Тип оповещения: ${ alertType === PushType.Call ? "Со звонками" : "Только уведомления" }`]
+    if (alertType === PushType.Call) text.push(`Номер для оповещения: ${ telnum }`)
     text.push(`Оповещения из Slack: ${ slackAlert ? "Включены" : "Отключены" }`)
     text.push(`Оповещения из Zendesk: ${ zendeskAlert ? "Включены" : "Отключены" }`)
     if (zendeskAlert) text.push(`Тип проверки тикетов: ${ capitalize(checkType) }`)
-    if (checkType === "user") text.push(`Выбранный сотрудник: ${ (zendeskUser) ? zendeskUser : "Не указан" }`)
+    if (checkType === ZendeskAlertingType.User) text.push(`Выбранный сотрудник: ${ (zendeskUser) ? zendeskUser : "Не указан" }`)
 
     return [
         formattingMsg('Текущие настройки оповещения:'),
-        ...code(text.map(el => formattingMsg(el))),
+        ...code(text.map(formattingMsg)),
         `${formattingMsg('Если настройки корректны, жми ')}\`${formattingMsg('/start')}\` ${formattingMsg('и я начну работу')}`,
     ].join("\n")
 }
@@ -95,5 +95,41 @@ export function stopMessage() {
     return prepare([
         '🚶Закончил работу!🚶',
         'Раз пока я больше не нужен, то пошел выключать все',
+    ])
+}
+
+export function statusMessage(
+    slackHandshake: boolean,
+    slackLastPingPong: number,
+    vatsConnected: boolean,
+    userIsCorrected: boolean,
+    lastSuccessTicketsRequest: number
+) {
+    const slackAlert = <boolean>appConfig.getKey('alert.slack_alerting')
+    const zendeskAlert = <boolean>appConfig.getKey('alert.zendesk_alerting')
+    const alertType = <PushType>appConfig.getKey("alert.type")
+
+    const text = []
+    if (slackAlert) {
+        text.push(`Рукопожатие скрипта для Slack: ${slackHandshake ? "Запущен" : "Не запущен"}`)
+        if (slackHandshake) text.push(`Последняя ping-pong сессия была ${slackLastPingPong}ms назад`)
+    }
+    if (alertType === PushType.Call) {
+        text.push(`Статус работы интеграции VATS: ${vatsConnected ? "ОК" : "Проблемы"}`)
+        text.push(`Настройка сотрудника: ${userIsCorrected ? "Корректная" : "Проблемная"}`)
+    }
+    if (zendeskAlert) text.push(`Последний запрос тикетов был: ${lastSuccessTicketsRequest}ms назад`)
+
+    return [
+        formattingMsg('Статус работы системы оповещений:'),
+        ...code(text.map(formattingMsg)),
+    ].join("\n")
+}
+
+export function slackPingPongMessage() {
+    return prepare([
+        'Ping или Pong событие не было получено из браузера',
+        'Вкладка была закрыта или выгружена из браузера',
+        'Необходима ручная проверка и перезапуск скрипта для Slack',
     ])
 }

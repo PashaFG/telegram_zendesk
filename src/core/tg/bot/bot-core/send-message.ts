@@ -2,6 +2,7 @@ import {
     TgMessageLocalData,
     TgMessageOutData,
     ReplyMarkup,
+    TgRequestResponse,
 } from "@definitions/definitions-tg"
 
 
@@ -13,7 +14,7 @@ const fetchResponseToTelegram = async (url: string, data: TgMessageOutData) => {
         },
         body: JSON.stringify(data),
     });
-    return await response.json();
+    return <TgRequestResponse>await response.json();
 }
 
 const send = (url: string, data: TgMessageLocalData) => {

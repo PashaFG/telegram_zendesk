@@ -1,16 +1,16 @@
-import { SlackEvent } from "@core/slack/slack"
+import { SlackEvent, SlackPingPongEvent } from "@core/slack/slack"
 import { Ticket } from "@core/ticket/ticket"
 import { EventType } from "@definitions/definitions-event"
 
 export class AlertEvent {
     type: EventType
-    body: SlackEvent | Ticket
+    body: SlackEvent | Ticket | SlackPingPongEvent
     tgMessageId: number
 
-    constructor(type: EventType, body: SlackEvent | Ticket) {
+    constructor(type: EventType, body: SlackEvent | Ticket | SlackPingPongEvent, tgMessageId: number) {
         this.type = type
-        this.body = body,
-        this.tgMessageId
+        this.body = body
+        this.tgMessageId = tgMessageId
     }
 
     get isEmergency() {

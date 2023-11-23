@@ -1,6 +1,3 @@
-export interface dictionary {
-    [index: string]: number
-}
 export interface logData {
     fileName: string
     time: string

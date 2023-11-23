@@ -13,7 +13,7 @@ export interface TicketEventConfig {
     subject: string
     updated: string
     ticket: LocalTicket
-    sla_next_breach_at: number
+    sla_next_breach_at: string
     assignee_id: number
 }
 

@@ -1,3 +1,11 @@
+# v4.2.4
+- add slack notification on drop browser script
+- add push on tickets events
+- add push on slack events
+- add call on events
+- fix errors to check vats configuration on /status
+- change some type in definitions
+
 # v4.2.3
 - add slack ping pong session alert
 - add /status

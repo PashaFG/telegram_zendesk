@@ -74,7 +74,7 @@ const setupCommands = (bot: BotTelegram, alertContainer: AlertContainer, zendesk
 
             const slackHandshake = getSlackHandshake()
             const slackLastPingPong = getSlackStatus()
-            const vatsConnected = !!vatsUser.message
+            const vatsConnected = !vatsUser.message
             const userIsCorrected = vatsUser.mobile_redirect.enabled && vatsUser.mobile_redirect.forward && vatsUser.mobile === mobile
             const lastSuccessTicketsRequest = (tickets.lastSuccessTicketsRequest)
                 ? Date.now() - tickets.lastSuccessTicketsRequest

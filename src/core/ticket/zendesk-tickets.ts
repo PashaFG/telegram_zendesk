@@ -127,8 +127,7 @@ export class ZendeskTickets {
     async startFetching(delay = 1000 * 60) {
         log(`${prefix} Start fetching with delay ${delay}`)
         await this.fetchTickets()
-        const intervalId = setInterval(this.fetchTickets.bind(this), delay)
-        return intervalId
+        return setInterval(this.fetchTickets.bind(this), delay)
     }
 
     checkTickets() {

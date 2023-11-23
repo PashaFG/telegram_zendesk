@@ -48,7 +48,7 @@ export async function setupUser() {
     }
     const user = <string>appConfig.getKey("vats.user")
 
-    await fetchApi(`user/${user}`, VatsMethod.POST, body)
+    await fetchApi(`users/${user}`, VatsMethod.PUT, body)
 }
 
 export async function clearUser() {
@@ -61,11 +61,11 @@ export async function clearUser() {
     }
     const user = <string>appConfig.getKey("vats.user")
 
-    await fetchApi(`user/${user}`, VatsMethod.POST, body)
+    await fetchApi(`users/${user}`, VatsMethod.POST, body)
 }
 
 export async function getUser() {
     const user = <string>appConfig.getKey("vats.user")
 
-    return <VatsUserResponse>await fetchApi(`user/${user}`, VatsMethod.GET)
+    return <VatsUserResponse>await fetchApi(`users/${user}`, VatsMethod.GET)
 }

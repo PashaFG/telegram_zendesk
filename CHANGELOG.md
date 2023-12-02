@@ -1,3 +1,6 @@
+# v4.2.6
+- minor fix to app-config.json
+
 # v4.2.5
 - fix set and check alert time before calling
 

@@ -53,7 +53,7 @@ export class ZendeskTickets {
             const oldTicket = this.oldTickets.find(oldTicket => ticket.id === oldTicket.id)
             const hasTicket = this.unAckTickets.find(unAckTicket => ticket.id === unAckTicket.id)
 
-            if (!hasTicket && (!oldTicket || (ticket.dateUpdate !== oldTicket.dateUpdate && (oldTicket.assigned === null && ticket.assigned !== appConfig.getKey('zendesk.user'))))) {
+            if (!hasTicket && (!oldTicket || (ticket.dateUpdate !== oldTicket.dateUpdate && (oldTicket.assigned === null && ticket.assigned !== appConfig.getKey('zendesk.user.id'))))) {
                this.unAckTickets.push(ticket)
             }
         })

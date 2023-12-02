@@ -1,3 +1,8 @@
+# v4.2.7
+- edit readme
+- fix check ticket on type "zendesk_work_type" === "user"
+- minor fix text to telegram messages
+
 # v4.2.6
 - minor fix to app-config.json
 

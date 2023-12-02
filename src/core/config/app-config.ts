@@ -39,7 +39,7 @@ const readConfig = (fullFileName?) => {
 
 const saveConfig = () => {
   try {
-    fs.writeFileSync(pathToFile, JSON.stringify(appConfig))
+    fs.writeFileSync(pathToFile, JSON.stringify(appConfig, null, 2))
     readConfig()
   } catch (error) {
     log(`${prefix} ${String(error)}`)

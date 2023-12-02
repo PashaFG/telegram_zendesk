@@ -83,7 +83,7 @@ export function notificationTypeMessage() {
     return prepare([
         'Необходимо выбрать тип оповещений',
         'push - Только уведомления',
-        'push - Со звонками',
+        'call - Со звонками',
     ])
 }
 

@@ -1,6 +1,7 @@
 dist
 logs
 node_modules
+tmp
 .env
 .eslintcache
 app_config.json

@@ -3,6 +3,7 @@ import { Config, ValueConfigType } from '@definitions/definitions-config'
 import { defaultConfig } from './default-config'
 import { error, log } from "@logger/logger"
 import dotenv from 'dotenv'
+import * as process from "process";
 dotenv.config()
 
 const prefix = "[config]"
@@ -120,6 +121,10 @@ const checkConfig = () => {
 const envToJson = () => {
   readConfig()
 
+  const defaultUrlRegExp = new RegExp(/client\.zendesk\.com|filter_id/gm)
+  const needToRebuildZendeskUrl = defaultUrlRegExp.test(process.env.ZENDESK_URL) &&
+      (process.env.ZENDESK_VIEWS_ID && process.env.ZENDESK_DOMAIN)
+
   setKey('telegram.bot_token', process.env.BOT_TOKEN)
   setKey('server_port', Number(process.env.SERVER_PORT))
   setKey('alert.time.normal', Number(process.env.ALERT_TIME))
@@ -136,7 +141,13 @@ const envToJson = () => {
   setKey('logger.dirSize', process.env.LOGGER_SIZE_LIMIT_DIRECTORY)
 
   setKey('zendesk.domain', process.env.ZENDESK_DOMAIN)
-  setKey('zendesk.view_url', process.env.ZENDESK_URL)
+  setKey(
+      'zendesk.view_url',
+      needToRebuildZendeskUrl
+          ? `https://${process.env.ZENDESK_DOMAIN}/api/v2/views/${process.env.ZENDESK_VIEWS_ID}/execute.json?per_page=50&page=1&params`
+          : process.env.ZENDESK_URL
+  )
+
   if (process.env.ZENDSEK_DEFAULT_GROUP_ID) {
       setKey('zendesk.default_group_id', process.env.ZENDSEK_DEFAULT_GROUP_ID)
       setKey(
@@ -144,6 +155,7 @@ const envToJson = () => {
         `https://${process.env.ZENDESK_DOMAIN}/api/v2/groups/${process.env.ZENDSEK_DEFAULT_GROUP_ID}/users?role=agent`
       )
   }
+
   setKey('zendesk.shared_session', process.env.ZENDESK_SHARED_SESSION)
 
   setKey('slack.ws_link', process.env.SLACK_WS)

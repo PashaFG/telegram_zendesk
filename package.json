@@ -1,6 +1,6 @@
 {
   "name": "telegram_zendesk",
-  "version": "4.2.9",
+  "version": "4.2.8",
   "description": "Alarm bot for zendesk. Fuck the sleep",
   "main": "dist/app.js",
   "scripts": {

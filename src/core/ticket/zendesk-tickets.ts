@@ -23,18 +23,18 @@ export class ZendeskTickets {
       this.newTickets = []
       this.unAckTickets = []
       this.oldTickets = []
-      this.resolvedTickets = []
+      this.resolvedTickets = this.#findResolved()
       this.alertCallback
       this.users = []
       this.lastSuccessTicketsRequest = 0
     }
 
-    private reSaveTickets(rawTickets: TicketEventConfig[]) {
+    #reSaveTickets(rawTickets: TicketEventConfig[]) {
         this.oldTickets = this.newTickets
         this.newTickets = rawTickets.map(ticket => new Ticket(ticket))
     }
 
-    private checkDefault(): Ticket[] {
+    #checkDefault(): Ticket[] {
         this.newTickets.forEach(ticket => {
             const oldTicket = this.oldTickets.find(oldTicket => ticket.id === oldTicket.id)
             const hasTicket = this.unAckTickets.find(unAckTicket => ticket.id === unAckTicket.id)
@@ -48,7 +48,7 @@ export class ZendeskTickets {
         return this.unAckTickets
     }
 
-    private checkWithUserAssign(): Ticket[] {
+    #checkWithUserAssign(): Ticket[] {
         this.newTickets.forEach(ticket => {
             const oldTicket = this.oldTickets.find(oldTicket => ticket.id === oldTicket.id)
             const hasTicket = this.unAckTickets.find(unAckTicket => ticket.id === unAckTicket.id)
@@ -61,7 +61,7 @@ export class ZendeskTickets {
         return this.unAckTickets
     }
 
-    private checkWithGroupAssign(): Ticket[] {
+    #checkWithGroupAssign(): Ticket[] {
         this.newTickets.forEach(ticket => {
             const oldTicket = this.oldTickets.find(oldTicket => ticket.id === oldTicket.id)
             const hasTicket = this.unAckTickets.find(unAckTicket => ticket.id === unAckTicket.id)
@@ -74,7 +74,7 @@ export class ZendeskTickets {
         return this.unAckTickets
     }
 
-    private findResolved(): number[] {
+    #findResolved(): number[] {
         if (this.resolvedTickets?.length) { this.resolvedTickets.length = 0 }
         const newTicketsId = this.newTickets.reduce((acc, cur) => { return [...acc, cur.id] }, [])
 
@@ -107,14 +107,14 @@ export class ZendeskTickets {
 
             log(`${prefix} http <= ${response.status}`)
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            this.reSaveTickets((<{ rows: any[] }> await response.json()).rows)
+            this.#reSaveTickets((<{ rows: any[] }> await response.json()).rows)
             this.lastSuccessTicketsRequest = Date.now()
 
             log(`${prefix} New tickets (Amount=${this.newTickets.length}): [${this.newTickets.map(ticket => ticket.id).join(';')}]`)
             log(`${prefix} Old tickets (Amount=${this.oldTickets.length}): [${this.oldTickets.map(ticket => ticket.id).join(';')}]`)
 
             if (this.oldTickets.length) {
-                this.alertCallback(this.checkTickets(), this.findResolved())
+                this.alertCallback(this.checkTickets(), this.#findResolved())
             }
 
             return this.newTickets
@@ -133,13 +133,13 @@ export class ZendeskTickets {
     checkTickets() {
         switch (appConfig.getKey("alert.zendesk_alerting_type")) {
             case "default":
-                return this.checkDefault()
+                return this.#checkDefault()
 
             case "user":
-               return this.checkWithUserAssign()
+               return this.#checkWithUserAssign()
 
             case "group":
-                return this.checkWithGroupAssign()
+                return this.#checkWithGroupAssign()
 
             default:
                 return []

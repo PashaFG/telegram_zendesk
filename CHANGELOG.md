@@ -1,3 +1,6 @@
+# v4.2.9
+- fix TypeErrors from clear resolvedTickets
+
 # v4.2.8
 - add rebuild zendesk url from old .env
 - 

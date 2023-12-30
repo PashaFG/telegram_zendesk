@@ -1,6 +1,9 @@
+# v4.2.9
+- fix TypeErrors from clear resolvedTickets
+
 # v4.2.8
 - add rebuild zendesk url from old .env
-- 
+
 # v4.2.7
 - edit readme
 - fix check ticket on type "zendesk_work_type" === "user"
